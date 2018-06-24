@@ -3,10 +3,10 @@
 
 EAPI=6
 
-MY_PN=Snapback2
-MODULE_AUTHOR=MIKEH
-MODULE_VERSION=1.001
-inherit perl-module
+DIST_NAME=Snapback2
+DIST_AUTHOR=MIKEH
+DIST_VERSION=1.001
+inherit eutils perl-module
 
 DESCRIPTION="Routines for support of rsync-based snapshot backup"
 
@@ -16,4 +16,7 @@ IUSE=""
 
 RDEPEND="dev-perl/Config-ApacheFormat"
 
-#SRC_TEST=do
+src_prepare() {
+	epatch "${FILESDIR}/${P}-dotinc.patch"
+	default
+}
