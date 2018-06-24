@@ -1,5 +1,4 @@
 # portage-overlay
-Misc packages, not included into gentoo main tree
 
 Install:
 ```bash
