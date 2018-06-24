@@ -4,7 +4,7 @@
 EAPI=6
 PYTHON_COMPAT=( python2_7 )
 
-inherit eutils python-r1
+inherit eutils python-single-r1
 
 DESCRIPTION="A graphical application to monitor and manage UPSes connected to a NUT server"
 HOMEPAGE="https://www.lestat.st/en/informatique/projets/nut-monitor"
@@ -19,15 +19,11 @@ RDEPEND="dev-python/pygtk
 	dev-python/pynut"
 DEPEND=""
 
-pkg_setup() {
-	python_set_active_version 2
-	python_pkg_setup
-}
-
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-paths.patch
 	epatch "${FILESDIR}"/${P}-paths2.patch
-	python_convert_shebangs -r 2 .
+	python_fix_shebang .
+	default
 }
 
 src_install() {
@@ -40,6 +36,8 @@ src_install() {
 	dodir /usr/share/nut-monitor/pixmaps
 	insinto /usr/share/nut-monitor/pixmaps
 	doins pixmaps/*
+
+	sed -i -e 's/nut-monitor.png/nut-monitor/' -e 's/Application;//' nut-monitor.desktop
 
 	doicon ${PN}.png
 	domenu ${PN}.desktop
