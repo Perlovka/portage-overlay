@@ -22,7 +22,7 @@ IUSE="doc fortran python static-libs test"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 RDEPEND="
-	sci-libs/hdf5[fortran=]
+	<sci-libs/hdf5-1.9[fortran=]
 	sys-cluster/openmpi[fortran=]
 	python? ( ${PYTHON_DEPS} )
 "
