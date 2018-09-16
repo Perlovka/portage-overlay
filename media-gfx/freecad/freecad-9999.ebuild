@@ -46,14 +46,14 @@ COMMON_DEPEND="
 	media-libs/coin
 	media-libs/freetype
 	sci-libs/libmed
-	sci-libs/opencascade:0.7.3[vtk(+)]
+	sci-libs/opencascade:7.3.0=[vtk(+)]
 	sci-libs/orocos_kdl
 	sys-libs/zlib
 	virtual/glu
 "
 
 RDEPEND="${COMMON_DEPEND}
-    openscad? ( media-gfx/openscad )
+	openscad? ( media-gfx/openscad )
 	dev-python/numpy[${PYTHON_USEDEP}]
 	dev-python/pivy[${PYTHON_USEDEP}]
 	dev-qt/assistant:5
@@ -82,8 +82,8 @@ src_prepare() {
 	fi
 
 	# Fix OPENMPI includes
-	sed -i 's/OPENMPI_INCLUDE_DIRS/OPENMPI_INCLUDEDIR/' CMakeLists.txt
-    rm -f "${S}/cMake/FindCoin3D.cmake"
+	sed -i 's/OPENMPI_INCLUDE_DIRS/OPENMPI_INCLUDEDIR/' CMakeLists.txt || die
+	rm -f "${S}/cMake/FindCoin3D.cmake" || die
 
 }
 

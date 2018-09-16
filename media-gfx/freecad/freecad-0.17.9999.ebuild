@@ -5,7 +5,7 @@ EAPI=6
 
 PYTHON_COMPAT=( python3_{4,5,6} )
 
-inherit cmake-utils xdg-utils gnome2-utils fortran-2 python-single-r1
+inherit cmake-utils xdg-utils gnome2-utils python-single-r1
 
 DESCRIPTION="Qt based Computer Aided Design application"
 HOMEPAGE="https://www.freecadweb.org/"
@@ -23,7 +23,7 @@ fi
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doxygen"
+IUSE="doc"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 COMMON_DEPEND="
@@ -47,7 +47,7 @@ COMMON_DEPEND="
 	media-libs/coin
 	media-libs/freetype
 	sci-libs/libmed
-	sci-libs/opencascade[vtk(+)]
+	sci-libs/opencascade:7.3.0=[vtk(+)]
 	sci-libs/orocos_kdl
 	sys-libs/zlib
 	virtual/glu"
@@ -58,14 +58,13 @@ RDEPEND="${COMMON_DEPEND}
 #   dev-python/pivy[${PYTHON_USEDEP}] - depends on SoQt which depends on Qt4
 
 DEPEND="${COMMON_DEPEND}
-	doxygen? ( app-doc/doxygen[dot] )
+	doc? ( app-doc/doxygen[dot] )
 	dev-lang/swig:0
 	dev-python/pyside-tools:2[${PYTHON_USEDEP}]"
 
 DOCS=( README.md ChangeLog.txt )
 
 pkg_setup() {
-	fortran-2_pkg_setup
 	python-single-r1_pkg_setup
 
 	[[ -z ${CASROOT} ]] && die "empty \$CASROOT, run eselect opencascade set or define otherwise"

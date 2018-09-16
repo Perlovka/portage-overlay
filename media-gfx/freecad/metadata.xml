@@ -9,6 +9,6 @@
     <remote-id type="github">FreeCAD/FreeCAD</remote-id>
   </upstream>
   <use>
-     <flag name="doxygen">Build and install developer documentation</flag>
+     <flag name="openscad">Use openscad</flag>
   </use>
 </pkgmetadata>
