@@ -23,7 +23,7 @@ RDEPEND="app-eselect/eselect-opencascade
 	gl2ps? ( x11-libs/gl2ps )
 	java? ( >=virtual/jdk-0:= )
 	tbb? ( dev-cpp/tbb )
-	vtk? ( || ( sci-libs/vtk[imaging] sci-libs/vtk[rendering] sci-libs/vtk[views] sci-libs/vtk[all-modules] ) )
+	vtk? ( sci-libs/vtk[rendering] )
 	dev-lang/tcl:0=
 	dev-lang/tk:0=
 	dev-tcltk/itcl
