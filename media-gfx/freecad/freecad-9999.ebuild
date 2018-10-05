@@ -29,7 +29,7 @@ COMMON_DEPEND="
 	${PYTHON_DEPS}
 	dev-cpp/eigen:3
 	dev-libs/boost:=[python,${PYTHON_USEDEP}]
-	dev-libs/libspnav
+	dev-libs/libspnav[X]
 	dev-libs/xerces-c[icu]
 	dev-python/matplotlib[${PYTHON_USEDEP}]
 	dev-python/pyside:2[svg,widgets,gui,${PYTHON_USEDEP}]
