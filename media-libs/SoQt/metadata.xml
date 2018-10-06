@@ -6,6 +6,6 @@
     <name>Gentoo Qt Project</name>
   </maintainer>
 <use>
-    <flag name="extra">Enables extra open inventor extensions</flag>
+    <flag name="extra">Enable extra Open Inventor extensions</flag>
 </use>
 </pkgmetadata>
