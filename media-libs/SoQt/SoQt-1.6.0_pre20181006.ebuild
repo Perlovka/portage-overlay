@@ -8,10 +8,12 @@ inherit cmake-utils mercurial
 DESCRIPTION="The glue between Coin3D and Qt"
 HOMEPAGE="https://bitbucket.org/Coin3D/soqt"
 EHG_REPO_URI="https://bitbucket.org/Coin3D/soqt"
+EHG_REVISION="765a9e7"
+
 EHG_PROJECT="Coin3D"
 
 LICENSE="|| ( GPL-2 PEL )"
-KEYWORDS=""
+KEYWORDS="~amd64 ~x86"
 SLOT="0"
 IUSE="doc +extra"
 
