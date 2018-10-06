@@ -30,16 +30,15 @@ KEYWORDS="~amd64 ~x86"
 IUSE="numpy test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
-DEPEND="
-	${PYTHON_DEPS}
+DEPEND="${PYTHON_DEPS}
+	numpy? ( dev-python/numpy[${PYTHON_USEDEP}] )
 	dev-libs/libxml2
 	dev-libs/libxslt
 	dev-qt/qtcore:5
 	dev-qt/qtxml:5
 	dev-qt/qtxmlpatterns:5
-	sys-devel/clang:=
-	numpy? ( dev-python/numpy[${PYTHON_USEDEP}] )
-"
+	sys-devel/clang:="
+
 RDEPEND="${DEPEND}"
 
 DOCS=( AUTHORS )
