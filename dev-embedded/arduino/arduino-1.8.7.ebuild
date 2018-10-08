@@ -8,36 +8,6 @@ inherit java-pkg-2 java-ant-2 gnome2-utils
 DESCRIPTION="An open-source AVR electronics prototyping platform"
 HOMEPAGE="https://arduino.cc/ https://github.com/arduino/"
 
-ARDUINO_LIBRARIES=(
-	"Adafruit_Circuit_Playground 1.8.1 https://github.com/Adafruit/Adafruit_CircuitPlayground/archive/1.8.1.zip"
-	"Bridge 1.7.0"
-	"Esplora 1.0.4"
-	"Ethernet 2.0.0"
-	"Firmata 2.5.8 https://github.com/firmata/arduino/archive/2.5.8.zip"
-	"GSM 1.0.6"
-	"Keyboard 1.0.2"
-	"LiquidCrystal 1.0.7"
-	"Mouse 1.0.1"
-	"Robot_Control 1.0.4"
-	"RobotIRremote 2.0.0"
-	"Robot_Motor 1.0.3"
-	"SD 1.2.2"
-	"Servo 1.1.2"
-	"SpacebrewYun 1.0.1"
-	"Stepper 1.1.3"
-	"Temboo 1.2.1"
-	"TFT 1.0.6"
-	"WiFi 1.2.7"
-	"WiFi101-Updater-ArduinoIDE-Plugin 0.9.2 https://github.com/arduino-libraries/WiFi101-FirmwareUpdater-Plugin/releases/download/v0.9.2/WiFi101-Updater-ArduinoIDE-Plugin-0.9.2.zip build/shared/"
-)
-
-for lib in "${ARDUINO_LIBRARIES[@]}"; do
-	lib=( $lib )
-	default_url="https://github.com/arduino-libraries/${lib[0]}/archive/${lib[1]}.zip"
-	url=${lib[2]:-$default_url}
-	ARDUINO_LIBRARIES_URI+=" ${url} -> ${PN}-${lib[0]}-${lib[1]}.zip"
-done
-
 ARDUINO_DOCS=(
 	"reference-1.6.6-3"
 	"Galileo_help_files-1.6.2"
@@ -50,7 +20,7 @@ done
 
 SRC_URI="https://github.com/arduino/Arduino/archive/${PV}.tar.gz -> ${P}.tar.gz
 	https://downloads.arduino.cc/cores/avr-1.6.23.tar.bz2 -> ${PN}-avr-1.6.23.tar.bz2
-	${ARDUINO_LIBRARIES_URI}
+	https://github.com/arduino-libraries/WiFi101-FirmwareUpdater-Plugin/releases/download/v0.9.2/WiFi101-Updater-ArduinoIDE-Plugin-0.9.2.zip -> ${PN}-WiFi101-Updater-ArduinoIDE-Plugin-0.9.2.zip
 	doc? (
 		${ARDUINO_DOCS_URI}
 	)"
@@ -58,14 +28,6 @@ SRC_URI="https://github.com/arduino/Arduino/archive/${PV}.tar.gz -> ${P}.tar.gz
 LICENSE="GPL-2 LGPL-2.1 CC-BY-SA-3.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-
-# bincheck RESTRICT is needed because firmware that ships with arduino contains code that makes
-# scanelf bark. It's also why we need a separate package for arduino-listserialportsc because if
-# we install it in the context of this package, we will get QA notices telling us we're doing a
-# bad thing.
-RESTRICT="strip"
-QA_PREBUILT="usr/share/arduino/hardware/arduino/avr/firmwares/*
-	usr/share/arduino/libraries/WiFi/extras/*"
 IUSE="doc"
 
 CDEPEND="dev-embedded/arduino-builder"
@@ -83,30 +45,24 @@ EANT_BUILD_TARGET="build"
 # don't run the default "javadoc" target, we don't have one.
 EANT_DOC_TARGET=""
 EANT_BUILD_XML="build/build.xml"
-EANT_EXTRA_ARGS=" -Dlocal_sources=1 -Dno_arduino_builder=1"
+EANT_EXTRA_ARGS=" -Dlight_bundle=1 -Dlocal_sources=1 -Dno_arduino_builder=1"
+
+RESTRICT="strip"
+QA_PREBUILT="usr/share/arduino/hardware/arduino/avr/firmwares/*"
 
 S="${WORKDIR}/Arduino-${PV}"
-SHARE="/usr/share/${PN}"
 
 PATCHES=(
-	# We need to disable astyle/listserialportsc and toolchain (avr-gcc, avrdude) bundling.
-	"${FILESDIR}/${PN}-1.8.5-build.xml.patch"
-
 	# We need to load system astyle/listserialportsc instead of bundled ones.
 	"${FILESDIR}/${PN}-1.8.5-lib-loading.patch"
 )
 
 src_unpack() {
-	# We don't want to unpack libraries, just move zip files into the work dir
+	# We don't want to unpack tools, just move zip files into the work dir
 	unpack `echo ${A} | cut -d ' ' -f1`
-	local lib
-	for lib in "${ARDUINO_LIBRARIES[@]}"; do
-		lib=( $lib )
-		local destfolder=${lib[3]:-build/}
-		cp "${DISTDIR}/${PN}-${lib[0]}-${lib[1]}.zip" "${S}/${destfolder}/${lib[0]}-${lib[1]}.zip" || die
-	done
 
 	cp "${DISTDIR}/${PN}-avr-1.6.23.tar.bz2" "${S}/build/avr-1.6.23.tar.bz2" || die
+	cp "${DISTDIR}/${PN}-WiFi101-Updater-ArduinoIDE-Plugin-0.9.2.zip" "${S}/build/shared/WiFi101-Updater-ArduinoIDE-Plugin-0.9.2.zip"|| die
 
 	if use doc; then
 		local docname
@@ -118,6 +74,15 @@ src_unpack() {
 
 src_prepare() {
 	default
+
+	# Unbundle libastyle
+	sed -i 's/\(target name="linux-libastyle-[a-zA-Z0-9]*"\)/\1 if="never"/g' "$S/build/build.xml" || die
+
+	# Unbundle avr toolchain
+	sed -i 's/target name="avr-toolchain-bundle" unless="light_bundle"/target name="avr-toolchain-bundle" if="never"/' "$S/build/build.xml" || die
+
+	# Install avr hardware
+	sed -i 's/target name="assemble-hardware" unless="light_bundle"/target name="assemble-hardware"/' "$S/build/build.xml" || die
 }
 
 src_compile() {
@@ -134,16 +99,17 @@ src_install() {
 	sed -i -e 's@^compiler.path=.*@compiler.path=/usr/bin/@' -e 's@^tools.avrdude.path=.*@tools.avrdude.path=/usr@' \
 		-e 's@^tools.avrdude.config.path=.*@tools.avrdude.config.path=/etc/avrdude.conf@' hardware/arduino/avr/platform.txt || die
 
+	local SHARE="/usr/share/${PN}"
+
 	java-pkg_dojar lib/*.jar
 	java-pkg_dolauncher ${PN} \
 		--pwd "${SHARE}" \
 		--main "processing.app.Base" \
 		--java_args "-DAPP_DIR=${SHARE} -Djava.library.path=${EPREFIX}/usr/$(get_libdir)"
 
-	# Install libraries
 	insinto "${SHARE}"
 
-	doins -r examples hardware lib libraries tools
+	doins -r examples hardware lib tools
 
 	# In upstream's build process, we copy these fiels below from the bundled arduino-builder.
 	# Here we do the same thing, but from the system arduino-builder.
