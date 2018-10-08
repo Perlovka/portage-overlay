@@ -99,34 +99,32 @@ src_install() {
 	sed -i -e 's@^compiler.path=.*@compiler.path=/usr/bin/@' -e 's@^tools.avrdude.path=.*@tools.avrdude.path=/usr@' \
 		-e 's@^tools.avrdude.config.path=.*@tools.avrdude.config.path=/etc/avrdude.conf@' hardware/arduino/avr/platform.txt || die
 
-	local SHARE="/usr/share/${PN}"
-
 	java-pkg_dojar lib/*.jar
 	java-pkg_dolauncher ${PN} \
-		--pwd "${SHARE}" \
+		--pwd "/usr/share/${PN}" \
 		--main "processing.app.Base" \
-		--java_args "-DAPP_DIR=${SHARE} -Djava.library.path=${EPREFIX}/usr/$(get_libdir)"
+		--java_args "-DAPP_DIR=/usr/share/${PN} -Djava.library.path=${EPREFIX}/usr/$(get_libdir)"
 
-	insinto "${SHARE}"
+	insinto "/usr/share/${PN}"
 
 	doins -r examples hardware lib tools
 
 	# In upstream's build process, we copy these fiels below from the bundled arduino-builder.
 	# Here we do the same thing, but from the system arduino-builder.
-	dosym "${EPREFIX}/usr/share/arduino-builder/platform.txt" "${SHARE}/hardware/platform.txt"
-	dosym "${EPREFIX}/usr/share/arduino-builder/platform.keys.rewrite.txt" "${SHARE}/hardware/platform.keys.rewrite.txt"
-	dosym "${EPREFIX}/usr/bin/arduino-builder" "${SHARE}/arduino-builder"
+	dosym "${EPREFIX}/usr/share/arduino-builder/platform.txt" "/usr/share/${PN}/hardware/platform.txt"
+	dosym "${EPREFIX}/usr/share/arduino-builder/platform.keys.rewrite.txt" "/usr/share/${PN}/hardware/platform.keys.rewrite.txt"
+	dosym "${EPREFIX}/usr/bin/arduino-builder" "/usr/share/${PN}/arduino-builder"
 
 	# hardware/tools/avr needs to exist or arduino-builder will
 	# complain about missing required -tools arg
-	dodir "${SHARE}/hardware/tools/avr"
+	dodir "/usr/share/${PN}/hardware/tools/avr"
 
 	if use doc; then
 		HTML_DOCS=( reference )
 		einstalldocs
 
 		# arduino expects its doc in its "main" directory. symlink it.
-		dosym "${EPREFIX}/usr/share/doc/${PF}/html/reference" "${SHARE}/reference"
+		dosym "${EPREFIX}/usr/share/doc/${PF}/html/reference" "/usr/share/${PN}/reference"
 	fi
 
 	# Install menu and icons
