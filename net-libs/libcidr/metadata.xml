@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>perlovka@gmail.com</email>
+		<name>Michael Perlov</name>
+	</maintainer>
+<!--	<use>
+		<flag name="usb">Access 3D printers via USB</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">Ultimaker/Cura</remote-id>
+	</upstream>
+-->
+</pkgmetadata>
