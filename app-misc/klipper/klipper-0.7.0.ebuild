@@ -21,46 +21,40 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 pkg_setup() {
-	KLIPPER_HOME="/var/lib/klipper"
+	KLIPPER_HOME="/var/lib/${PN}"
 
 	ebegin "Creating klipper user and group"
 	enewgroup ${PN}
 	enewuser ${PN} -1 "/bin/bash" "${KLIPPER_HOME}" ${PN}
 	eend $?
-
 }
 
 src_compile() {
 	:;
 }
 
-pkg_preinst() {
-	if [[ -e ${ROOT%/}${KLIPPER_HOME}/printer.cfg ]]; then
-		KLIPPER_CONFIG=1
-	fi
-}
-
 src_install() {
-	dodir /var/lib/${PN}
-	insinto /var/lib/${PN}
+	insinto ${KLIPPER_HOME}
+	doins -r config klippy
 
-	doins -r config docs klippy lib scripts src
-	doins Makefile README.md
+	insinto ${KLIPPER_HOME}/firmware
+	doins -r lib scripts src Makefile
 
-	if [[ ! -e ${ROOT%/}${KLIPPER_HOME}/printer.cfg ]]; then
-		cp -a "${S}/config/example.cfg" "${D}/var/lib/${PN}/printer.cfg" || die
-	fi
+	insinto /etc/${PN}
+	newins "${S}/config/example.cfg" "klipper.conf"
 
-	fowners -R klipper:klipper /var/lib/${PN}
+	fowners -R ${PN}:${PN} ${KLIPPER_HOME}
 
-	newconfd "${FILESDIR}"/klipper.confd klipper
-	newinitd "${FILESDIR}"/klipper.initd klipper
+	newconfd "${FILESDIR}/${PN}.confd" ${PN}
+	newinitd "${FILESDIR}/${PN}.initd" ${PN}
 }
 
 pkg_postinst() {
-	if [[ -z $KLIPPER_CONFIG ]]; then
-		einfo "Example configuration has been installed to /var/lib/${PN}/printer.cfg"
+	if ! has_version app-misc/klipper; then
+		einfo "Example configuration has been installed to /etc/${PN}/${PN}.conf"
 		einfo "Please review and change appropriately before using klipper"
 		einfo "Documentation is available online at https://github.com/KevinOConnor/klipper/blob/master/docs/Overview.md"
 	fi
+
+	[[ ! -x /usr/bin/avr-gcc ]] && ewarn "Missing avr-gcc; you need to crossdev -s4 avr"
 }
