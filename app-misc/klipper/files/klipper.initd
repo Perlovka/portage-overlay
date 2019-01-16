@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+# Copyright 1999-2017 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+
+description="Klipper daemon"
+
+KLIPPY_CONFIGFILE=${KLIPPY_CONFIGFILE:-/var/lib/klipper/printer.cfg}
+KLIPPY_LOGFILE=${KLIPPY_LOGFILE:-/tmp/klippy.log}
+
+command="${KLIPPY_EXEC:-python2}"
+command_args="${KLIPPY_ARGS:-/var/lib/klipper/klippy/klippy.py} ${KLIPPY_CONFIGFILE} -l ${KLIPPY_LOGFILE}"
+command_user="${KLIPPY_USER:-klipper}:${KLIPPY_GROUP:-klipper}"
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"

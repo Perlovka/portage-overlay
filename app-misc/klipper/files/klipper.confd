@@ -1,0 +1,7 @@
+
+#KLIPPY_USER="klipper"
+#KLIPPY_GROUP="klipper"
+#KLIPPY_EXEC="python2"
+#KLIPPY_ARGS="/var/lib/klipper/klippy/klippy.py"
+#KLIPPY_CONFIGFILE="/var/lib/klipper/printer.cfg"
+#KLIPPY_LOGFILE="/tmp/klippy.log"
