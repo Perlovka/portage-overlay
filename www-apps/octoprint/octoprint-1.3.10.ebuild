@@ -16,7 +16,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~arm64"
 
 RDEPEND=""
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	dev-python/virtualenv"
 
 S=${WORKDIR}/${MY_PN}-${PV}
 
