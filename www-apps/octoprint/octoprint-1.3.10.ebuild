@@ -13,7 +13,7 @@ SRC_URI="https://github.com/foosel/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="AGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="~amd64 ~arm ~arm64"
 
 RDEPEND=""
 DEPEND="${RDEPEND}"
