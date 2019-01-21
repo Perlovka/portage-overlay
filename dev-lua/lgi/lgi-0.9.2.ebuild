@@ -29,6 +29,7 @@ DEPEND="${RDEPEND}
 		)"
 
 src_prepare() {
+	default
 	sed -i \
 		-e "s:^LUA_LIBDIR.*$:LUA_LIBDIR = $($(tc-getPKG_CONFIG) --variable INSTALL_CMOD lua):" \
 		-e "s:^LUA_SHAREDIR.*$:LUA_SHAREDIR = $($(tc-getPKG_CONFIG) --variable INSTALL_LMOD lua):" \
@@ -45,8 +46,9 @@ src_test() {
 
 src_install() {
 	emake DESTDIR="${D}" install
-	dohtml -r docs/*
 	dodoc README.md
+	docinto html
+	dodoc -r docs/*
 	if use examples; then
 		dodoc -r samples
 	fi
