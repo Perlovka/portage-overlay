@@ -1,9 +1,9 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 inherit cmake-utils python-r1 virtualx
 
@@ -30,15 +30,18 @@ IUSE="3d charts concurrent datavis declarative designer gui help location multim
 	sql svg test testlib webchannel webengine websockets widgets x11extras xmlpatterns"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
+	3d? ( gui network )
 	charts? ( widgets )
 	datavis? ( gui )
 	declarative? ( gui network )
 	designer? ( widgets )
 	help? ( widgets )
+	location? ( positioning )
 	multimedia? ( gui network )
 	opengl? ( widgets )
 	printsupport? ( widgets )
 	scripttools? ( gui script widgets )
+	speech? ( multimedia )
 	sql? ( widgets )
 	svg? ( widgets )
 	testlib? ( widgets )
@@ -82,11 +85,6 @@ DEPEND="${PYTHON_DEPS}
 RDEPEND="${DEPEND}"
 
 src_prepare() {
-	if use prefix; then
-		cp "${FILESDIR}"/rpath.cmake . || die
-		sed -i -e '1iinclude(rpath.cmake)' CMakeLists.txt || die
-	fi
-
 	cmake-utils_src_prepare
 }
 

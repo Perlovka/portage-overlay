@@ -1,9 +1,9 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 inherit cmake-utils llvm python-r1
 
@@ -31,13 +31,13 @@ IUSE="numpy test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 DEPEND="${PYTHON_DEPS}
-	numpy? ( dev-python/numpy[${PYTHON_USEDEP}] )
 	dev-libs/libxml2
 	dev-libs/libxslt
 	dev-qt/qtcore:5
 	dev-qt/qtxml:5
 	dev-qt/qtxmlpatterns:5
-	sys-devel/clang:="
+	>=sys-devel/clang-5:=
+	numpy? ( dev-python/numpy[${PYTHON_USEDEP}] )"
 
 RDEPEND="${DEPEND}"
 
@@ -56,11 +56,6 @@ src_prepare() {
 	#FIXME: File an upstream issue requesting a sane way to disable NumPy support.
 	if ! use numpy; then
 		sed -i -e '/print(os\.path\.realpath(numpy))/d' libshiboken/CMakeLists.txt || die
-	fi
-
-	if use prefix; then
-		cp "${FILESDIR}"/rpath.cmake . || die
-		sed -i -e '1iinclude(rpath.cmake)' CMakeLists.txt || die
 	fi
 
 	if [[ ${PV} != *9999 ]]; then

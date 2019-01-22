@@ -1,10 +1,10 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
 CMAKE_IN_SOURCE_BUILD="1"
-PYTHON_COMPAT=( python2_7 python3_{4,5,6} )
+PYTHON_COMPAT=( python2_7 python3_{5,6} )
 
 inherit cmake-utils python-r1 virtualx
 
@@ -31,8 +31,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # The "pyside2uic" package imports both the "PySide2.QtGui" and
 # "PySide2.QtWidgets" C extensions and hence requires "gui" and "widgets".
-RDEPEND="
-	${PYTHON_DEPS}
+RDEPEND="${PYTHON_DEPS}
 	>=dev-python/pyside-${PV}:${SLOT}[gui,widgets,${PYTHON_USEDEP}]
 	>=dev-python/shiboken-${PV}:${SLOT}[${PYTHON_USEDEP}]
 	dev-qt/qtcore:5"
