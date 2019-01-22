@@ -41,13 +41,12 @@ src_compile() {
 }
 
 src_test() {
-	Xemake CC="$(tc-getCC)" COPTFLAGS="-Wall -Wextra ${CFLAGS}" LIBFLAG="-shared ${LDFLAGS}" check
+	virtx emake CC="$(tc-getCC)" COPTFLAGS="-Wall -Wextra ${CFLAGS}" LIBFLAG="-shared ${LDFLAGS}" check
 }
 
 src_install() {
 	emake DESTDIR="${D}" install
 	dodoc README.md
-	docinto html
 	dodoc -r docs/*
 	if use examples; then
 		dodoc -r samples
