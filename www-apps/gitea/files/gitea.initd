@@ -4,8 +4,8 @@
 
 description="Gitea, a self-hosted Git service"
 pidfile=${pidfile:-"/run/${SVCNAME}/${SVCNAME}.pid"}
-user=${user:-gitea}
-group=${group:-gitea}
+user=${user:-git}
+group=${group:-git}
 
 command="/usr/bin/gitea web"
 command_args="${command_args:--config /var/lib/gitea/conf/app.ini}"

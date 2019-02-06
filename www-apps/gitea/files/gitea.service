@@ -13,8 +13,8 @@ After=memcached.service
 After=redis.service
 
 [Service]
-User=gitea
-Group=gitea
+User=git
+Group=git
 
 Environment="GITEA_WORK_DIR=/var/lib/gitea"
 WorkingDirectory=/var/lib/gitea

@@ -24,8 +24,8 @@ RDEPEND="
 "
 
 pkg_setup() {
-	enewgroup gitea
-	enewuser gitea -1 /bin/bash /var/lib/gitea gitea
+	enewgroup git
+	enewuser git -1 /bin/bash /var/lib/gitea git
 }
 
 src_prepare() {
@@ -41,8 +41,7 @@ src_prepare() {
 		-e "s#^LEVEL = Trace#LEVEL = Info#"\
 		-e "s#^APP_ID =#;APP_ID =#"\
 		-e "s#^TRUSTED_FACETS =#;TRUSTED_FACETS =#"\
-        -e "s#^RUN_USER = git#RUN_USER = gitea#"\
-        -e "s#^USER = root#USER = gitea#"\
+        -e "s#^USER = root#USER = git#"\
 		"src/${EGO_PN}/custom/conf/app.ini.sample" || die
 }
 
@@ -57,7 +56,7 @@ src_compile() {
 }
 
 src_install() {
-	diropts -m0750 -o gitea -g gitea
+	diropts -m0750 -o git -g git
 	keepdir /var/log/gitea /var/lib/gitea /var/lib/gitea/data
 	pushd "src/${EGO_PN}" >/dev/null || die
 	dobin gitea
@@ -73,7 +72,7 @@ pkg_postinst() {
 	if [[ ! -e "${EROOT}/var/lib/gitea/conf/app.ini" ]]; then
 		elog "No app.ini found, copying initial config over"
 		cp "${EROOT}/var/lib/gitea/conf/app.ini.sample" "${EROOT}/var/lib/gitea/conf/app.ini" || die
-		chown gitea:gitea "${EROOT}/var/lib/gitea/conf/app.ini"
+		chown git:git "${EROOT}/var/lib/gitea/conf/app.ini"
 	else
 		elog "app.ini found, please check example file for possible changes"
 		ewarn "Please note that environment variables have been changed:"
