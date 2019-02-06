@@ -13,11 +13,10 @@ SRC_URI="https://github.com/go-gitea/gitea/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-IUSE="sqlite pam"
+IUSE="pam sqlite"
 
 DEPEND="
 	dev-go/go-bindata
-	sys-libs/pam
 "
 RDEPEND="
 	dev-vcs/git
