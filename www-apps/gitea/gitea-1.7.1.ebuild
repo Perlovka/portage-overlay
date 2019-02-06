@@ -38,10 +38,12 @@ src_prepare() {
 	sed -i -e "s#^RUN_MODE = dev#RUN_MODE = prod#"\
 		-e "s#^LOG_SQL = true#LOG_SQL = false#"\
 		-e "s#^ROOT_PATH =#ROOT_PATH = ${EPREFIX}/var/log/gitea#"\
-		-e "s#^MODE = console#MODE = console, file#"\
+		-e "s#^MODE = console#MODE = file#"\
 		-e "s#^LEVEL = Trace#LEVEL = Info#"\
 		-e "s#^APP_ID =#;APP_ID =#"\
 		-e "s#^TRUSTED_FACETS =#;TRUSTED_FACETS =#"\
+        -e "s#^RUN_USER = git#RUN_USER = gitea#"\
+        -e "s#^USER = root#USER = gitea#"\
 		"src/${EGO_PN}/custom/conf/app.ini.sample" || die
 }
 
