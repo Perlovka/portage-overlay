@@ -72,7 +72,7 @@ pkg_postinst() {
 	if [[ ! -e "${EROOT}/var/lib/gitea/conf/app.ini" ]]; then
 		elog "No app.ini found, copying initial config over"
 		cp "${EROOT}/var/lib/gitea/conf/app.ini.sample" "${EROOT}/var/lib/gitea/conf/app.ini" || die
-		chown git:git "${EROOT}/var/lib/gitea/conf/app.ini"
+		chown gitea:gitea "${EROOT}/var/lib/gitea/conf/app.ini"
 	else
 		elog "app.ini found, please check example file for possible changes"
 		ewarn "Please note that environment variables have been changed:"
