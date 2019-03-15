@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -21,7 +21,6 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
 IUSE="doc openscad"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
@@ -74,17 +73,11 @@ pkg_setup() {
 }
 
 src_prepare() {
-
 	cmake-utils_src_prepare
-
-	if [[ ${PV} != *9999 ]]; then
-		eapply "${FILESDIR}/${P}-boost-python-fix.patch"
-	fi
 
 	# Fix OPENMPI includes
 	sed -i 's/OPENMPI_INCLUDE_DIRS/OPENMPI_INCLUDEDIR/' CMakeLists.txt || die
 	rm -f "${S}/cMake/FindCoin3D.cmake" || die
-
 }
 
 src_configure() {

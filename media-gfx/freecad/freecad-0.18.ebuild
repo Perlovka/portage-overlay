@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -13,7 +13,6 @@ HOMEPAGE="https://www.freecadweb.org/"
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/FreeCAD/FreeCAD.git"
-	EGIT_BRANCH="releases/FreeCAD-0-17"
 else
 	SRC_URI="https://github.com/FreeCAD/FreeCAD/archive/${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~x86"
@@ -22,15 +21,14 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
-IUSE="doc"
+IUSE="doc openscad"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 COMMON_DEPEND="
 	${PYTHON_DEPS}
 	dev-cpp/eigen:3
 	dev-libs/boost:=[python,${PYTHON_USEDEP}]
-	dev-libs/libspnav
+	dev-libs/libspnav[X]
 	dev-libs/xerces-c[icu]
 	dev-python/matplotlib[${PYTHON_USEDEP}]
 	dev-python/pyside:2[svg,widgets,gui,${PYTHON_USEDEP}]
@@ -50,17 +48,21 @@ COMMON_DEPEND="
 	sci-libs/opencascade:7.3.0=[vtk(+)]
 	sci-libs/orocos_kdl
 	sys-libs/zlib
-	virtual/glu"
+	virtual/glu
+"
 
 RDEPEND="${COMMON_DEPEND}
+	openscad? ( media-gfx/openscad )
 	dev-python/numpy[${PYTHON_USEDEP}]
-	dev-qt/assistant:5"
-#   dev-python/pivy[${PYTHON_USEDEP}] - depends on SoQt which depends on Qt4
+	dev-python/pivy[${PYTHON_USEDEP}]
+	dev-qt/assistant:5
+"
 
 DEPEND="${COMMON_DEPEND}
 	doc? ( app-doc/doxygen[dot] )
 	dev-lang/swig:0
-	dev-python/pyside-tools:2[${PYTHON_USEDEP}]"
+	dev-python/pyside-tools:2[${PYTHON_USEDEP}]
+"
 
 DOCS=( README.md ChangeLog.txt )
 
@@ -73,41 +75,9 @@ pkg_setup() {
 src_prepare() {
 	cmake-utils_src_prepare
 
-	if [[ ${PV} != *9999 ]]; then
-		eapply "${FILESDIR}/${P}-boost-python-fix.patch"
-	fi
-
 	# Fix OPENMPI includes
-	sed -i 's/OPENMPI_INCLUDE_DIRS/OPENMPI_INCLUDEDIR/' CMakeLists.txt
-
-sed -i '/^#define/a #include <QButtonGroup>' \
-	src/Mod/MeshPart/Gui/Tessellation.h \
-	src/Mod/Part/Gui/DlgSettingsGeneral.h || die
-
-sed -i '/^#define/a #include <QAction>' \
-	src/Mod/Fem/Gui/TaskFemConstraintBearing.h \
-	src/Mod/Fem/Gui/TaskFemConstraintContact.h \
-	src/Mod/Fem/Gui/TaskFemConstraintDisplacement.h \
-	src/Mod/Fem/Gui/TaskFemConstraintFixed.h \
-	src/Mod/Fem/Gui/TaskFemConstraintFluidBoundary.h \
-	src/Mod/Fem/Gui/TaskFemConstraintForce.h \
-	src/Mod/Fem/Gui/TaskFemConstraintHeatflux.h \
-	src/Mod/Fem/Gui/TaskFemConstraintPlaneRotation.h \
-	src/Mod/Fem/Gui/TaskFemConstraintPressure.h \
-	src/Mod/Fem/Gui/TaskFemConstraintTemperature.h \
-	src/Mod/Fem/Gui/TaskFemConstraintTransform.h || die
-
-sed -i '/^#define /a #include <QAction>' \
-	src/Mod/PartDesign/Gui/TaskBooleanParameters.h \
-	src/Mod/PartDesign/Gui/TaskChamferParameters.h \
-	src/Mod/PartDesign/Gui/TaskDraftParameters.h \
-	src/Mod/PartDesign/Gui/TaskFilletParameters.h \
-	src/Mod/PartDesign/Gui/TaskLinearPatternParameters.h \
-	src/Mod/PartDesign/Gui/TaskMirroredParameters.h \
-	src/Mod/PartDesign/Gui/TaskMultiTransformParameters.h \
-	src/Mod/PartDesign/Gui/TaskPolarPatternParameters.h \
-	src/Mod/PartDesign/Gui/TaskScaledParameters.h \
-	src/Mod/PartDesign/Gui/TaskThicknessParameters.h || die
+	sed -i 's/OPENMPI_INCLUDE_DIRS/OPENMPI_INCLUDEDIR/' CMakeLists.txt || die
+	rm -f "${S}/cMake/FindCoin3D.cmake" || die
 }
 
 src_configure() {
@@ -116,7 +86,6 @@ src_configure() {
 	#-DSOQT_ not used
 	local mycmakeargs=(
 		-DBUILD_QT5=ON
-		-DBUILD_QT5_WEBKIT=ON
 		-DCMAKE_BUILD_TYPE=Release
 		-DCMAKE_INSTALL_PREFIX="/opt/${PN}"
 #        -DCMAKE_INSTALL_LIBDIR="${EPREFIX}/usr/$(get_libdir)/${PN}"
@@ -124,8 +93,8 @@ src_configure() {
 #        -DCMAKE_INSTALL_DATADIR="${EPREFIX}/usr/share/${PN}"
 #        -DCMAKE_INSTALL_DOCDIR="${EPREFIX}/usr/share/doc/${PF}"
 		-DFREECAD_USE_EXTERNAL_KDL="ON"
-		-DOCC_INCLUDE_DIR="${CASROOT}"/inc
-		-DOCC_LIBRARY_DIR="${CASROOT}"/$(get_libdir)
+		-DOCC_INCLUDE_DIR="${CASROOT}"/include/opencascade
+		-DOCC_LIBRARY_DIR="${CASROOT}"/lib
 	)
 
 	# TODO: Remove embedded dependencies
