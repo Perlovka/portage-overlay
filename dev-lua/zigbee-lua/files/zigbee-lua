@@ -1,0 +1,10 @@
+#!/usr/bin/env -S luajit -j off
+
+package.path="/usr/share/lua/5.1/zigbee-lua/?.lua;/etc/zigbee-lua/?.lua;" .. package.path
+
+local ctx = require("lib.ctx"):init()
+if ctx.config.environment then
+    ctx.environment = require(ctx.config.environment)
+end
+
+ctx:run()

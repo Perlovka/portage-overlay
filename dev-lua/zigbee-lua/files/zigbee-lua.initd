@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+# Copyright 1999-2019 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+
+pidfile="/run/zigbee-lua.pid"
+command_background=1
+command="/usr/sbin/zigbee-lua"
+start_stop_daemon_args="--user zigbee --group zigbee \
+    --chdir /var/lib/zigbee-lua \
+    -1 /var/lib/zigbee-lua/stdout.log \
+    -2 /var/lib/zigbee-lua/stderr.log"
+
+#depend() {
+#    need net
+#    after mongodb
+#}
