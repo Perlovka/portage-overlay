@@ -3,8 +3,6 @@
 
 EAPI=7
 
-#CMAKE_MAKEFILE_GENERATOR="emake"
-
 inherit cmake-utils
 
 DESCRIPTION="The glue between Coin3D and Qt"
