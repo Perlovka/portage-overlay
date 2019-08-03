@@ -6,6 +6,7 @@
     <name>Gentoo Qt Project</name>
   </maintainer>
 <use>
-    <flag name="extra">Enable extra Open Inventor extensions</flag>
+    <flag name="coin-iv-extensions">Enable extra Open Inventor extensions</flag>
+    <flag name="spacenav">Enable Space Navigator support</flag>
 </use>
 </pkgmetadata>

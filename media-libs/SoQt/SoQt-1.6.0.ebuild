@@ -1,36 +1,41 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit cmake-utils mercurial
+#CMAKE_MAKEFILE_GENERATOR="emake"
+
+inherit cmake-utils
 
 DESCRIPTION="The glue between Coin3D and Qt"
 HOMEPAGE="https://bitbucket.org/Coin3D/soqt"
-EHG_REPO_URI="https://bitbucket.org/Coin3D/soqt"
-EHG_PROJECT="Coin3D"
+SRC_URI="https://bitbucket.org/Coin3D/soqt/downloads/soqt-1.6.0-src.zip"
+RESTRICT="primaryuri"
 
 LICENSE="|| ( GPL-2 PEL )"
-KEYWORDS=""
+KEYWORDS="~amd64 ~x86"
 SLOT="0"
-IUSE="doc +extra"
+IUSE="+coin-iv-extensions doc spacenav"
 
 RDEPEND=">=media-libs/coin-4
-	dev-qt/qtcore:5
-	dev-qt/qtgui:5
 	dev-qt/qtopengl:5
 	dev-qt/qtwidgets:5
-	virtual/opengl"
+	spacenav? ( dev-libs/libspnav:= )
+"
 
 DEPEND="${RDEPEND}
-	doc? ( app-doc/doxygen )"
+	doc? ( app-doc/doxygen )
+"
 
 DOCS=( AUTHORS ChangeLog FAQ HACKING NEWS README )
 
+S="${WORKDIR}/soqt"
+
 src_configure() {
 	local mycmakeargs=(
-		-DCOIN_IV_EXTENSIONS=$(usex extra ON OFF)
+		-DCOIN_IV_EXTENSIONS=$(usex coin-iv-extensions ON OFF)
 		-DSOQT_BUILD_DOCUMENTATION=$(usex doc ON OFF)
+		-DHAVE_SPACENAV_SUPPORT=$(usex spacenav ON OFF)
 	)
 
 	cmake-utils_src_configure
