@@ -3,17 +3,21 @@
 
 EAPI=7
 
-inherit git-r3 toolchain-funcs user
+inherit toolchain-funcs user
+
+Z_COMMIT_SHA="b0ed770b499ecdb6c1d8c6875a326b7bd7dc6d86"
 
 EGIT_SUBMODULES=()
 
 DESCRIPTION="A Zigbee control framework written in Lua"
 HOMEPAGE="https://github.com/hwhw/zigbee-lua"
-EGIT_REPO_URI="https://github.com/hwhw/zigbee-lua"
+
+SRC_URI="https://github.com/hwhw/${PN}/archive/${Z_COMMIT_SHA}.tar.gz -> ${P}.tar.gz"
+RESTRICT="primaryuri"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~amd64 ~x86"
 IUSE=""
 
 RDEPEND="dev-lang/lua:=
@@ -25,6 +29,8 @@ RDEPEND="dev-lang/lua:=
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
+
+S="${WORKDIR}/${PN}-${Z_COMMIT_SHA}"
 
 pkg_setup() {
 	enewgroup zigbee

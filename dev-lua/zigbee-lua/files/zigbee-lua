@@ -1,4 +1,4 @@
-#!/usr/bin/env -S luajit -j off
+#!/usr/bin/env -S luajit
 
 package.path="/usr/share/lua/5.1/zigbee-lua/?.lua;/etc/zigbee-lua/?.lua;" .. package.path
 

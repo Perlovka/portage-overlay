@@ -9,8 +9,3 @@ start_stop_daemon_args="--user zigbee --group zigbee \
     --chdir /var/lib/zigbee-lua \
     -1 /var/lib/zigbee-lua/stdout.log \
     -2 /var/lib/zigbee-lua/stderr.log"
-
-#depend() {
-#    need net
-#    after mongodb
-#}
