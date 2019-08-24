@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>perlovka@gmail.com</email>
+    <name>Michael Perlov</name>
+  </maintainer>
+  <use>
+    <flag name="lua52compat">Enable some Lua:5.2+ features</flag>
+    <flag name="optimization">Use "Amalgamation" compilation mode</flag>
+  </use>
+</pkgmetadata>
