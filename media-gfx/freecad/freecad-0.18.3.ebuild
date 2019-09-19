@@ -46,7 +46,7 @@ RDEPEND="${PYTHON_DEPS}
 	dev-qt/qtxml:5
 	media-libs/coin
 	media-libs/freetype
-	sci-libs/libmed
+	sci-libs/med
 	sci-libs/opencascade:7.3.0=[vtk(+)]
 	sci-libs/orocos_kdl
 	sys-libs/zlib
