@@ -1,0 +1,211 @@
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/core/df.py Pidgeot-python-lnp-a45542d6e7fd/core/df.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/core/df.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/core/df.py	2019-08-06 18:09:52.682190213 +0300
+@@ -21,7 +21,8 @@
+     """Locates all suitable Dwairf Fortress installations (folders starting
+     with "Dwarf Fortress" or "df")"""
+     lnp.folders = tuple([
+-        os.path.basename(o) for o in glob(os.path.join(lnp.BASEDIR, '*')) if
++#        os.path.basename(o) for o in glob(os.path.join(lnp.BASEDIR, '*')) if
++        os.path.basename(o) for o in glob(os.path.join(os.path.expanduser("~"), '.dwarf-fortress')) if
+         os.path.isdir(o) and os.path.exists(os.path.join(
+             o, 'data', 'init', 'init.txt'))])
+ 
+@@ -30,7 +31,8 @@
+     first detected. If a folder name is passed as the first argument to the
+     script, that folder will be used. Otherwise, if only one valid folder was
+     detected, that one will be selected."""
+-    find_df_folders()
++#    find_df_folders()
++    lnp.folders = tuple([os.path.join(os.path.expanduser("~"), '.dwarf-fortress')])
+     if len(lnp.folders) == 1:
+         set_df_folder(lnp.folders[0])
+     if lnp.args.df_folder and lnp.args.df_folder in lnp.folders:
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/core/lnp.py Pidgeot-python-lnp-a45542d6e7fd/core/lnp.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/core/lnp.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/core/lnp.py	2019-08-06 17:22:56.981028653 +0300
+@@ -128,7 +128,7 @@
+     def initialize_program(self):
+         """Initializes the main program (errorlog, path registration, etc.)."""
+         from . import paths, utilities, errorlog
+-        self.BASEDIR = '.'
++        self.BASEDIR = os.path.join(os.path.expanduser("~"), '.config/pylnp')
+         self.detect_basedir()
+         paths.clear()
+         paths.register('root', self.BASEDIR)
+@@ -183,7 +183,7 @@
+             }
+         }
+         self.config = JSONConfiguration(config_file, default_config)
+-        self.userconfig = JSONConfiguration('PyLNP.user')
++        self.userconfig = JSONConfiguration(paths.get('root', 'PyLNP.user'))
+         self.autorun = []
+         utilities.load_autorun()
+ 
+@@ -208,7 +208,7 @@
+ 
+     def initialize_ui(self):
+         """Instantiates the UI object."""
+-        from tkgui.tkgui import TkGui
++        from pylnp.tkgui.tkgui import TkGui
+         self.ui = TkGui()
+ 
+     def reload_program(self):
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/advanced.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/advanced.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/advanced.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/advanced.py	2019-08-06 16:13:51.098353864 +0300
+@@ -6,8 +6,8 @@
+ 
+ import sys
+ 
+-from core import launcher, legends_processor
+-from core.lnp import lnp
++from pylnp.core import launcher, legends_processor
++from pylnp.core.lnp import lnp
+ 
+ from . import controls
+ from .layout import GridLayouter
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/child_windows.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/child_windows.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/child_windows.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/child_windows.py	2019-08-06 16:13:51.098353864 +0300
+@@ -6,9 +6,9 @@
+ 
+ import sys, os
+ 
+-from core import errorlog, launcher, paths, terminal, update
+-from core.dfraw import DFRaw
+-from core.lnp import lnp
++from pylnp.core import errorlog, launcher, paths, terminal, update
++from pylnp.core.dfraw import DFRaw
++from pylnp.core.lnp import lnp
+ 
+ from . import controls
+ 
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/controls.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/controls.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/controls.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/controls.py	2019-08-06 16:13:51.098353864 +0300
+@@ -7,7 +7,7 @@
+ import sys
+ import types
+ 
+-from core.lnp import lnp
++from pylnp.core.lnp import lnp
+ from . import binding
+ 
+ if sys.version_info[0] == 3:  # Alternate import names
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/dfhack.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/dfhack.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/dfhack.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/dfhack.py	2019-08-06 16:13:51.099353883 +0300
+@@ -6,7 +6,7 @@
+ 
+ import sys
+ 
+-from core import hacks
++from pylnp.core import hacks
+ 
+ from . import binding, controls
+ from .layout import GridLayouter
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/graphics.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/graphics.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/graphics.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/graphics.py	2019-08-06 16:13:51.099353883 +0300
+@@ -6,8 +6,8 @@
+ 
+ import sys
+ 
+-from core import colors, graphics, paths
+-from core.lnp import lnp
++from pylnp.core import colors, graphics, paths
++from pylnp.core.lnp import lnp
+ 
+ from . import controls, binding, tkhelpers
+ from .layout import GridLayouter
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/mods.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/mods.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/mods.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/mods.py	2019-08-06 16:13:51.099353883 +0300
+@@ -6,7 +6,7 @@
+ 
+ import sys
+ 
+-from core import mods
++from pylnp.core import mods
+ 
+ from . import controls, tkhelpers
+ from .layout import GridLayouter
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/options.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/options.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/options.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/options.py	2019-08-06 16:13:51.099353883 +0300
+@@ -6,8 +6,8 @@
+ 
+ import sys
+ 
+-from core import df, keybinds, embarks
+-from core.lnp import lnp
++from pylnp.core import df, keybinds, embarks
++from pylnp.core.lnp import lnp
+ 
+ from . import controls, binding, tkhelpers
+ from .layout import GridLayouter
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/tkgui.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/tkgui.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/tkgui.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/tkgui.py	2019-08-06 17:36:58.339393019 +0300
+@@ -8,10 +8,10 @@
+ import sys
+ from threading import Semaphore
+ 
+-from core.helpers import get_resource
+-from core.lnp import lnp, VERSION
+-from core import df, launcher, log, paths, update, mods, download, baselines
+-from core import terminal, importer
++from pylnp.core.helpers import get_resource
++from pylnp.core.lnp import lnp, VERSION
++from pylnp.core import df, launcher, log, paths, update, mods, download, baselines
++from pylnp.core import terminal, importer
+ 
+ from . import controls, binding
+ from .child_windows import LogWindow, InitEditor, SelectDF, UpdateWindow
+@@ -153,7 +153,7 @@
+         elif windowing == "x11":
+             root.tk.call(
+                 'wm', 'iconphoto', root, "-default",
+-                get_image(get_resource('LNP')))
++                get_image(get_resource('/usr/share/icons/hicolor/64x64/apps/LNP')))
+         elif windowing == "aqua":  # OS X has no window icons
+             pass
+ 
+@@ -161,7 +161,7 @@
+         self.vcmd = (root.register(validate_number), '%P')
+ 
+         main = Frame(root)
+-        self.logo = logo = get_image(get_resource('LNPSMALL'))
++        self.logo = logo = get_image(get_resource('/usr/share/pylnp/LNPSMALL'))
+         Label(root, image=logo, anchor=CENTER).pack(fill=X)
+         main.pack(side=TOP, fill=BOTH, expand=Y)
+ 
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/tkhelpers.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/tkhelpers.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/tkhelpers.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/tkhelpers.py	2019-08-06 16:13:51.099353883 +0300
+@@ -7,8 +7,8 @@
+ 
+ import sys
+ 
+-from core import download, baselines
+-from core.lnp import lnp
++from pylnp.core import download, baselines
++from pylnp.core.lnp import lnp
+ 
+ if sys.version_info[0] == 3:  # Alternate import names
+     # pylint:disable=import-error
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/utilities.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/utilities.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/utilities.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/utilities.py	2019-08-06 16:13:51.099353883 +0300
+@@ -6,8 +6,8 @@
+ 
+ import sys
+ 
+-from core import launcher, paths, utilities
+-from core.lnp import lnp
++from pylnp.core import launcher, paths, utilities
++from pylnp.core.lnp import lnp
+ 
+ from . import controls
+ from .tab import Tab
