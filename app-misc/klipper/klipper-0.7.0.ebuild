@@ -1,7 +1,7 @@
-# Copyright 1999-2019 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 inherit user
 
@@ -16,8 +16,8 @@ KEYWORDS="~amd64 ~arm ~arm64"
 RDEPEND="
 	dev-python/cffi
 	dev-python/greenlet
-	dev-python/pyserial"
-
+	dev-python/pyserial
+"
 DEPEND="${RDEPEND}"
 
 pkg_setup() {
@@ -25,7 +25,7 @@ pkg_setup() {
 
 	ebegin "Creating klipper user and group"
 	enewgroup ${PN}
-	enewuser ${PN} -1 "/bin/bash" "${KLIPPER_HOME}" ${PN}
+	enewuser ${PN} -1 "/bin/bash" "${KLIPPER_HOME}" "${PN},uucp"
 	eend $?
 }
 
