@@ -31,10 +31,20 @@ pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
+src_prepare() {
+	default
+
+	# Find SIP for current python version, not the latest installed
+	sed -i "s/find_package(Python3 3.4 REQUIRED/find_package(Python3 ${EPYTHON##python} EXACT REQUIRED/g" CMakeLists.txt || die
+	sed -i "s/find_package(Python3 3.4 REQUIRED/find_package(Python3 ${EPYTHON##python} EXACT REQUIRED/g" cmake/FindSIP.cmake || die
+
+	cmake-utils_src_prepare
+}
+
 src_configure() {
 	local mycmakeargs=(
-		-DBUILD_PYTHON=$(usex python ON OFF)
 		-DBUILD_EXAMPLES=$(usex examples ON OFF)
+		-DBUILD_PYTHON=$(usex python ON OFF)
 		-DBUILD_STATIC=$(usex static-libs ON OFF)
 	)
 
