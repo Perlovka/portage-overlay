@@ -113,6 +113,11 @@ src_install() {
 	# Here we do the same thing, but from the system arduino-builder.
 	dosym "${EPREFIX}/usr/share/arduino-builder/platform.keys.rewrite.txt" "/usr/share/${PN}/hardware/platform.keys.rewrite.txt"
 
+    # hardware/tools/avr needs to exist or arduino-builder will
+    # complain about missing required -tools arg
+    # https://github.com/arduino/Arduino/blob/master/arduino-core/src/cc/arduino/Compiler.java#L246
+    dodir "/usr/share/${PN}/hardware/tools/avr"
+
 	if use doc; then
 		HTML_DOCS=( reference )
 		einstalldocs
