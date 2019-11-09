@@ -32,6 +32,7 @@ RDEPEND="${PYTHON_DEPS}
 	<dev-python/emoji-0.6
 	>=dev-python/feedparser-5.2.1
 	<dev-python/feedparser-5.3
+	=dev-python/filetype-1.0.5
 	<dev-python/flask-1.0
 	>=dev-python/flask-assets-0.12
 	<dev-python/flask-assets-0.13
@@ -57,6 +58,7 @@ RDEPEND="${PYTHON_DEPS}
 	<dev-python/netaddr-0.8
 	>=dev-python/netifaces-0.10.9
 	<dev-python/netifaces-0.11
+	dev-python/pip
 	>=dev-python/pkginfo-1.5.0.1
 	<dev-python/pkginfo-1.6
 	>=dev-python/psutil-5.6.1
@@ -101,8 +103,8 @@ pkg_setup() {
 }
 
 src_prepare() {
-    default
-    sed -i 's/flask>=0.10.1,<0.11/flask<1.0/' setup.py || die
+	default
+	sed -i 's/flask>=0.10.1,<0.11/flask<1.0/' setup.py || die
 }
 
 src_install() {
