@@ -1,45 +1,27 @@
 # Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
-inherit eutils flag-o-matic linux-info linux-mod multilib-minimal nvidia-driver \
-	portability toolchain-funcs unpacker user udev
+EAPI=7
+inherit desktop flag-o-matic linux-info linux-mod multilib-minimal \
+	nvidia-driver portability toolchain-funcs unpacker user udev
+
+NV_TOOLS_PV="435.21"
 
 DESCRIPTION="NVIDIA Accelerated Graphics Driver"
-HOMEPAGE="http://www.nvidia.com/"
-
-AMD64_FBSD_NV_PACKAGE="NVIDIA-FreeBSD-x86_64-${PV}"
-AMD64_NV_PACKAGE="NVIDIA-Linux-x86_64-${PV}"
-ARM_NV_PACKAGE="NVIDIA-Linux-armv7l-gnueabihf-${PV}"
-
-NV_URI="https://us.download.nvidia.com/XFree86/"
-NV_DEV_URI="https://developer.nvidia.com/"
-NV_TOOLS_PV=$(get_version_component_range 1-2 ${PV})
-
-# FIX: for 418.52.05, not match 418.52 driver
-if [[ "${PV}" == "418.52.20" ]]; then
-	NV_TOOLS_PV="418.56"
-fi
-
-if [[ $(get_version_component_count ${PV}) -gt 2 ]]; then
-	AMD64_URI="${NV_DEV_URI}vulkan-beta-$(delete_all_version_separators ${PV})-linux -> NVIDIA-Linux-x86_64-${PV}.run"
-else
-	AMD64_URI="${NV_URI}Linux-x86_64/${PV}/${AMD64_NV_PACKAGE}.run"
-fi
-SRC_URI="
-	amd64? ( ${AMD64_URI} )
+HOMEPAGE="https://www.nvidia.com/"
+SRC_URI="https://developer.nvidia.com/vulkan-beta-$(ver_rs 1- '' ${PV})-linux -> NVIDIA-Linux-x86_64-${PV}.run
 	tools? (
 		https://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-${NV_TOOLS_PV}.tar.bz2
 	)
 "
 
+EMULTILIB_PKG="true"
+KEYWORDS="-* ~amd64"
 LICENSE="GPL-2 NVIDIA-r2"
 SLOT="0/${PV%.*}"
-KEYWORDS="-* ~amd64 ~amd64-fbsd"
-RESTRICT="bindist mirror"
-EMULTILIB_PKG="true"
+RESTRICT="bindist mirror test"
 
-IUSE="acpi compat +driver gtk3 kernel_FreeBSD kernel_linux +kms multilib static-libs +tools uvm wayland +X"
+IUSE="acpi compat +driver gtk3 kernel_FreeBSD kernel_linux +kms libglvnd multilib static-libs +tools uvm wayland +X"
 REQUIRED_USE="
 	tools? ( X )
 	static-libs? ( tools )
@@ -66,7 +48,11 @@ COMMON="
 		x11-libs/pango[X]
 	)
 	X? (
-		>=app-eselect/eselect-opengl-1.0.9
+		!libglvnd? ( >=app-eselect/eselect-opengl-1.0.9 )
+		libglvnd? (
+			media-libs/libglvnd[${MULTILIB_USEDEP}]
+			!app-eselect/eselect-opengl
+		)
 		app-misc/pax-utils
 	)
 "
@@ -90,47 +76,15 @@ RDEPEND="
 "
 QA_PREBUILT="opt/* usr/lib*"
 S=${WORKDIR}/
-
-nvidia_drivers_versions_check() {
-	if use amd64 && has_multilib_profile && \
-		[ "${DEFAULT_ABI}" != "amd64" ]; then
-		eerror "This ebuild doesn't currently support changing your default ABI"
-		die "Unexpected \${DEFAULT_ABI} = ${DEFAULT_ABI}"
-	fi
-
-	if use kernel_linux && kernel_is ge 5 1; then
-		ewarn "Gentoo supports kernels which are supported by NVIDIA"
-		ewarn "which are limited to the following kernels:"
-		ewarn "<sys-kernel/gentoo-sources-5.1"
-		ewarn "<sys-kernel/vanilla-sources-5.1"
-		ewarn ""
-		ewarn "You are free to utilize epatch_user to provide whatever"
-		ewarn "support you feel is appropriate, but will not receive"
-		ewarn "support as a result of those changes."
-		ewarn ""
-		ewarn "Do not file a bug report about this."
-		ewarn ""
-	fi
-
-	# Since Nvidia ships many different series of drivers, we need to give the user
-	# some kind of guidance as to what version they should install. This tries
-	# to point the user in the right direction but can't be perfect. check
-	# nvidia-driver.eclass
-	nvidia-driver-check-warning
-
-	# Kernel features/options to check for
-	CONFIG_CHECK="!DEBUG_MUTEXES !I2C_NVIDIA_GPU ~!LOCKDEP ~MTRR ~SYSVIPC ~ZONE_DMA"
-
-	# Now do the above checks
-	use kernel_linux && check_extra_config
-}
+NV_KV_MAX_PLUS="5.4"
+CONFIG_CHECK="!DEBUG_MUTEXES ~!I2C_NVIDIA_GPU ~!LOCKDEP ~MTRR ~SYSVIPC ~ZONE_DMA"
 
 pkg_pretend() {
-	nvidia_drivers_versions_check
+	nvidia-driver_check
 }
 
 pkg_setup() {
-	nvidia_drivers_versions_check
+	nvidia-driver_check
 
 	# try to turn off distcc and ccache for people that have a problem with it
 	export DISTCC_DISABLE=1
@@ -181,6 +135,12 @@ pkg_setup() {
 	fi
 }
 
+src_configure() {
+	tc-export AR CC LD
+
+	default
+}
+
 src_prepare() {
 	local man_file
 	for man_file in "${NV_MAN}"/*1.gz; do
@@ -204,10 +164,6 @@ src_prepare() {
 }
 
 src_compile() {
-	# This is already the default on Linux, as there's no toplevel Makefile, but
-	# on FreeBSD there's one and triggers the kernel module build, as we install
-	# it by itself, pass this.
-
 	cd "${NV_SRC}"
 	if use kernel_FreeBSD; then
 		MAKE="$(get_bmake)" CFLAGS="-Wno-sign-compare" emake CC="$(tc-getCC)" \
@@ -219,27 +175,23 @@ src_compile() {
 	fi
 
 	if use tools; then
-		emake -C "${S}"/nvidia-settings-${NV_TOOLS_PV}/src \
-			AR="$(tc-getAR)" \
-			CC="$(tc-getCC)" \
+		emake -C "${S}"/nvidia-settings-${NV_TOOLS_PV}/src/libXNVCtrl \
 			DO_STRIP= \
-			LD="$(tc-getCC)" \
 			LIBDIR="$(get_libdir)" \
 			NVLD="$(tc-getLD)" \
 			NV_VERBOSE=1 \
-			RANLIB="$(tc-getRANLIB)" \
-			build-xnvctrl
+			OUTPUTDIR=. \
+			RANLIB="$(tc-getRANLIB)"
 
 		emake -C "${S}"/nvidia-settings-${NV_TOOLS_PV}/src \
-			CC="$(tc-getCC)" \
 			DO_STRIP= \
 			GTK3_AVAILABLE=$(usex gtk3 1 0) \
-			LD="$(tc-getCC)" \
 			LIBDIR="$(get_libdir)" \
 			NVLD="$(tc-getLD)" \
 			NVML_ENABLED=0 \
 			NV_USE_BUNDLED_LIBJANSSON=0 \
-			NV_VERBOSE=1
+			NV_VERBOSE=1 \
+			OUTPUTDIR=.
 	fi
 }
 
@@ -390,12 +342,13 @@ src_install() {
 	if use tools; then
 		emake -C "${S}"/nvidia-settings-${NV_TOOLS_PV}/src/ \
 			DESTDIR="${D}" \
+			DO_STRIP= \
 			GTK3_AVAILABLE=$(usex gtk3 1 0) \
 			LIBDIR="${D}/usr/$(get_libdir)" \
 			NV_USE_BUNDLED_LIBJANSSON=0 \
 			NV_VERBOSE=1 \
+			OUTPUTDIR=. \
 			PREFIX=/usr \
-			DO_STRIP= \
 			install
 
 		if use static-libs; then
@@ -460,7 +413,11 @@ src_install() {
 
 src_install-libs() {
 	local inslibdir=$(get_libdir)
-	local GL_ROOT="/usr/$(get_libdir)/opengl/nvidia/lib"
+	if use libglvnd; then
+		local GL_ROOT="/usr/$(get_libdir)"
+	else
+		local GL_ROOT="/usr/$(get_libdir)/opengl/nvidia/lib"
+	fi
 	local CL_ROOT="/usr/$(get_libdir)/OpenCL/vendors/nvidia"
 	local nv_libdir="${NV_OBJ}"
 
@@ -470,18 +427,11 @@ src_install-libs() {
 
 	if use X; then
 		NV_GLX_LIBRARIES=(
-			"libEGL.so.$(usex compat ${NV_SOVER} 1.1.0) ${GL_ROOT}"
 			"libEGL_nvidia.so.${NV_SOVER} ${GL_ROOT}"
-			"libGL.so.$(usex compat ${NV_SOVER} 1.7.0) ${GL_ROOT}"
-			"libGLESv1_CM.so.1.2.0 ${GL_ROOT}"
 			"libGLESv1_CM_nvidia.so.${NV_SOVER} ${GL_ROOT}"
-			"libGLESv2.so.2.1.0 ${GL_ROOT}"
 			"libGLESv2_nvidia.so.${NV_SOVER} ${GL_ROOT}"
-			"libGLX.so.0 ${GL_ROOT}"
 			"libGLX_nvidia.so.${NV_SOVER} ${GL_ROOT}"
-			"libGLdispatch.so.0 ${GL_ROOT}"
 			"libOpenCL.so.1.0.0 ${CL_ROOT}"
-			"libOpenGL.so.0 ${GL_ROOT}"
 			"libcuda.so.${NV_SOVER}"
 			"libnvcuvid.so.${NV_SOVER}"
 			"libnvidia-compiler.so.${NV_SOVER}"
@@ -497,11 +447,22 @@ src_install-libs() {
 			"libnvidia-ptxjitcompiler.so.${NV_SOVER}"
 			"libvdpau_nvidia.so.${NV_SOVER}"
 		)
+		if ! use libglvnd; then
+			NV_GLX_LIBRARIES+=(
+				"libEGL.so.$( [[ ${ABI} == "amd64" ]] && usex compat ${NV_SOVER} 1.1.0 || echo 1.1.0) ${GL_ROOT}"
+				"libGL.so.1.7.0 ${GL_ROOT}"
+				"libGLESv1_CM.so.1.2.0 ${GL_ROOT}"
+				"libGLESv2.so.2.1.0 ${GL_ROOT}"
+				"libGLX.so.0 ${GL_ROOT}"
+				"libGLdispatch.so.0 ${GL_ROOT}"
+				"libOpenGL.so.0 ${GL_ROOT}"
+			)
+		fi
 
 		if use wayland && has_multilib_profile && [[ ${ABI} == "amd64" ]];
 		then
 			NV_GLX_LIBRARIES+=(
-				"libnvidia-egl-wayland.so.1.1.2"
+				"libnvidia-egl-wayland.so.1.1.3"
 			)
 		fi
 
@@ -564,7 +525,9 @@ pkg_postinst() {
 	use driver && use kernel_linux && linux-mod_pkg_postinst
 
 	# Switch to the nvidia implementation
-	use X && "${ROOT}"/usr/bin/eselect opengl set --use-old nvidia
+	if ! use libglvnd; then
+		use X && "${ROOT}"/usr/bin/eselect opengl set --use-old nvidia
+	fi
 	"${ROOT}"/usr/bin/eselect opencl set --use-old nvidia
 
 	readme.gentoo_print_elog
@@ -588,10 +551,14 @@ pkg_postinst() {
 }
 
 pkg_prerm() {
-	use X && "${ROOT}"/usr/bin/eselect opengl set --use-old xorg-x11
+	if ! use libglvnd; then
+		use X && "${ROOT}"/usr/bin/eselect opengl set --use-old xorg-x11
+	fi
 }
 
 pkg_postrm() {
 	use driver && use kernel_linux && linux-mod_pkg_postrm
-	use X && "${ROOT}"/usr/bin/eselect opengl set --use-old xorg-x11
+	if ! use libglvnd; then
+		use X && "${ROOT}"/usr/bin/eselect opengl set --use-old xorg-x11
+	fi
 }
