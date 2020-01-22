@@ -1,16 +1,16 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit cmake-utils flag-o-matic
+inherit cmake flag-o-matic
 
 DESCRIPTION="A high-level 3D graphics toolkit, fully compatible with SGI Open Inventor 2.1"
 HOMEPAGE="https://bitbucket.org/Coin3D/coin/wiki/Home"
 SRC_URI="https://bitbucket.org/Coin3D/coin/downloads/coin-4.0.0-src.zip"
 
 LICENSE="|| ( GPL-2 PEL )"
-KEYWORDS="~amd64 ~arm ~hppa ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~arm ~hppa ~ppc ~ppc64 ~x86"
 SLOT="0"
 IUSE="debug doc javascript openal qthelp simage test threads"
 
@@ -70,7 +70,7 @@ src_configure() {
 		-DUSE_EXTERNAL_EXPAT=ON
 	)
 
-	cmake-utils_src_configure
+	cmake_src_configure
 }
 
 src_test() {

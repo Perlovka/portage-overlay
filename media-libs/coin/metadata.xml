@@ -2,7 +2,8 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="person">
-    <email>reavertm@gentoo.org</email>
+    <email>perlovka@gmail.com</email>
+    <name>Michael Perlov</name>
   </maintainer>
   <use>
     <flag name="qthelp">Build API documentation in QtHelp format</flag>
