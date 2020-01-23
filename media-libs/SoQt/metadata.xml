@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-  <maintainer type="project">
-    <email>qt@gentoo.org</email>
-    <name>Gentoo Qt Project</name>
+  <maintainer type="person">
+    <email>perlovka@gmail.com</email>
+    <name>Michael Perlov</name>
   </maintainer>
-<use>
+  <use>
     <flag name="coin-iv-extensions">Enable extra Open Inventor extensions</flag>
     <flag name="spacenav">Enable Space Navigator support</flag>
-</use>
+  </use>
+  <upstream>
+    <remote-id type="github">coin3d/soqt</remote-id>
+  </upstream>
 </pkgmetadata>

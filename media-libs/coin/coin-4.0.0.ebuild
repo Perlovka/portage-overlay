@@ -6,8 +6,9 @@ EAPI=7
 inherit cmake flag-o-matic
 
 DESCRIPTION="A high-level 3D graphics toolkit, fully compatible with SGI Open Inventor 2.1"
-HOMEPAGE="https://bitbucket.org/Coin3D/coin/wiki/Home"
-SRC_URI="https://bitbucket.org/Coin3D/coin/downloads/coin-4.0.0-src.zip"
+HOMEPAGE="https://github.com/coin3d/coin/wiki"
+SRC_URI="https://github.com/coin3d/coin/archive/Coin-${PV}.tar.gz -> ${P}.tar.gz
+	https://github.com/coin3d/cpack.d/archive/master.zip -> coin3d-cpack.d-master.zip"
 
 LICENSE="|| ( GPL-2 PEL )"
 KEYWORDS="~amd64 ~arm ~hppa ~ppc ~ppc64 ~x86"
@@ -39,11 +40,17 @@ DEPEND="${RDEPEND}
 	)
 "
 
-S="${WORKDIR}/${PN}-6enkw"
+S="${WORKDIR}/${PN}-Coin-${PV}"
 
 DOCS=(
 	AUTHORS FAQ FAQ.legal NEWS README RELNOTES THANKS docs/HACKING
 )
+
+src_prepare() {
+	default
+	mv "${WORKDIR}/cpack.d-master" "${S}/cpack.d" || die
+	cmake_src_prepare
+}
 
 src_configure() {
 	use debug && append-cppflags -DCOIN_DEBUG=1
