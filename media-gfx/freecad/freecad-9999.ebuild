@@ -13,16 +13,17 @@ HOMEPAGE="https://www.freecadweb.org/"
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/FreeCAD/FreeCAD.git"
+	KEYWORDS=""
 else
 	SRC_URI="https://github.com/FreeCAD/FreeCAD/archive/${PV}.tar.gz -> ${P}.tar.gz"
 	RESTRICT="primaryuri"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="~amd64"
 	S="${WORKDIR}/FreeCAD-${PV}"
 fi
 
 LICENSE="LGPL-2"
 SLOT="0"
-IUSE="debug doc mpi netgen pcl"
+IUSE="debug doc oce mpi netgen pcl"
 
 FREECAD_EXPERIMENTAL_MODULES="assembly complete reverseengineering ship plot"
 
@@ -91,13 +92,14 @@ RDEPEND="${PYTHON_DEPS}
 	media-libs/freetype
 	sci-libs/flann[mpi?,openmp]
 	sci-libs/med[mpi(+)?,python,${PYTHON_USEDEP}]
-	sci-libs/opencascade:7.3.0=[vtk(+)]
 	sci-libs/orocos_kdl:=
 	sys-libs/zlib
 	virtual/glu
 	virtual/libusb:1
 	addonmgr? ( dev-python/git-python[${PYTHON_USEDEP}] )
 	fem? ( sci-libs/vtk[boost,mpi?,python,qt5,rendering,${PYTHON_USEDEP}] )
+	oce? ( sci-libs/oce:=[vtk(+)] )
+	!oce? ( sci-libs/opencascade:7.3.0=[vtk(+)] )
 	mesh? (
 		dev-python/pybind11[${PYTHON_USEDEP}]
 		sci-libs/hdf5:=[fortran,mpi?,zlib]
@@ -126,6 +128,11 @@ pkg_setup() {
 
 src_prepare() {
 	rm -f "${S}/cMake/FindCoin3D.cmake" || die
+
+	# Fix OpenCASCADE lookup
+	sed -i -e "s#/usr/include/opencascade#${CASROOT}/include/opencascade#" \
+			-e "s#/opt/opencascade/lib#${CASROOT}/lib#" cMake/FindOpenCasCade.cmake || die
+
 	cmake_src_prepare
 
 	# Fix external zipios lookup
@@ -188,12 +195,10 @@ src_configure() {
 		-DFREECAD_USE_EXTERNAL_KDL=ON
 		-DFREECAD_USE_EXTERNAL_ZIPIOS=OFF # doesn't work yet, also no package in gentoo tree
 		-DFREECAD_USE_FREETYPE=ON
+		-DFREECAD_USE_OCC_VARIANT=$(usex oce "\"Community Edition\"" "\"Official Version\"")
 		-DFREECAD_USE_PCL=$(usex pcl)
 		-DFREECAD_USE_PYBIND11=$(usex mesh)
-		-DOCC_INCLUDE_DIR="${CASROOT}"/include/opencascade
-		-DOCC_LIBRARY_DIR="${CASROOT}"/$(get_libdir)
 		-DOCCT_CMAKE_FALLBACK=ON # don't use occt-config which isn't included in opencascade for Gentoo
-		-DCOIN3D_INCLUDE_DIRS=$(pkg-config --variable includedir Coin)
 	)
 
 	cmake_src_configure
