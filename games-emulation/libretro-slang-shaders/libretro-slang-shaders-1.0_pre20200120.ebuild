@@ -1,9 +1,9 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-LIBRETRO_COMMIT_SHA="3d694820d1f8a02400ce2da0fd8211a509ace4e9"
+LIBRETRO_COMMIT_SHA="02c53d660534bdb547515b201cef4c049fbec95f"
 
 DESCRIPTION="Libretro slang shaders"
 HOMEPAGE="https://github.com/libretro/slang-shaders"
@@ -12,7 +12,7 @@ RESTRICT="primaryuri"
 
 LICENSE="CC-BY-4.0"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~x86"
 IUSE=""
 
 DEPEND=""

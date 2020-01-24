@@ -1,12 +1,12 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-LIBRETRO_COMMIT_SHA="2a8bef8b99b8456e91dd1343fe912578f0acae74"
+LIBRETRO_COMMIT_SHA="74573ff55ed89d2c765126dbdb2be7458b350f2e"
 
-DESCRIPTION="RetroArch assets"
-HOMEPAGE="https://github.com/libretro/retroarch-assets"
+DESCRIPTION="RetroArch joypad autoconfig files"
+HOMEPAGE="https://github.com/libretro/retroarch-joypad-autoconfig"
 SRC_URI="https://github.com/libretro/${PN}/archive/${LIBRETRO_COMMIT_SHA}.tar.gz -> ${P}.tar.gz"
 RESTRICT="primaryuri"
 
@@ -20,6 +20,10 @@ RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${PN}-${LIBRETRO_COMMIT_SHA}"
 
+src_compile(){
+	:
+}
+
 src_install() {
-	emake DESTDIR="${D}" INSTALLDIR="/usr/share/retroarch/assets" install
+	emake DESTDIR="${D}" INSTALLDIR="/usr/share/retroarch/autoconfig" install
 }
