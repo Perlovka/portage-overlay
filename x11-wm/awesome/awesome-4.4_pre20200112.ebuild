@@ -5,7 +5,9 @@ EAPI=7
 
 inherit cmake desktop pax-utils
 
-E_COMMIT_SHA="6eef064da57efc7d6345329d27b59ccc4fd87148"
+E_COMMIT_SHA="c10bdc3cfec1c86b11eb929f5e2564babade8206"
+#E_COMMIT_SHA="04c757322c079a8b9f13a51d0dc4c37e5a5b7965" # titlebar bug
+
 
 DESCRIPTION="A dynamic floating and tiling window manager"
 HOMEPAGE="https://awesomewm.org/"
