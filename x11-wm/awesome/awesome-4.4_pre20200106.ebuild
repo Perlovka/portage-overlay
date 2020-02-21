@@ -3,15 +3,21 @@
 
 EAPI=7
 
-inherit cmake desktop git-r3 pax-utils
+inherit cmake desktop pax-utils
+
+E_COMMIT_SHA="6eef064da57efc7d6345329d27b59ccc4fd87148"
 
 DESCRIPTION="A dynamic floating and tiling window manager"
 HOMEPAGE="https://awesomewm.org/"
-EGIT_REPO_URI="https://github.com/awesomeWM/${PN}.git"
+#EGIT_REPO_URI="https://github.com/awesomeWM/${PN}.git"
+
+SRC_URI="https://github.com/awesomeWM/${PN}/archive/${E_COMMIT_SHA}.tar.gz -> ${P}.tar.gz"
+RESTRICT="primaryuri"
+S="${WORKDIR}/${PN}-${E_COMMIT_SHA}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86"
 IUSE="dbus doc gnome luajit test"
 RESTRICT="test"
 
@@ -81,7 +87,7 @@ src_configure() {
 
 src_test() {
 	# awesome's test suite starts Xvfb by itself, no need for virtualx eclass
-	HEADLESS=1 cmake_src_make check -j1
+	HEADLESS=1 cmake-utils_src_make check -j1
 }
 
 src_install() {
