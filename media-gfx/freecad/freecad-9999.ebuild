@@ -61,7 +61,9 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 #	dev-libs/zipios
 
 BDEPEND="
-	dev-python/pyside-tools:2[${PYTHON_USEDEP}]
+	$(python_gen_cond_dep '
+		dev-python/pyside-tools:2[${PYTHON_MULTI_USEDEP}]
+	')
 	dev-lang/swig
 	doc? (
 		app-arch/p7zip
@@ -71,13 +73,16 @@ BDEPEND="
 
 RDEPEND="${PYTHON_DEPS}
 	dev-cpp/eigen:3
-	dev-libs/boost:=[mpi?,python,threads,${PYTHON_USEDEP}]
+	$(python_gen_cond_dep '
+		dev-libs/boost:=[mpi?,python,threads,${PYTHON_MULTI_USEDEP}]
+		dev-python/matplotlib[${PYTHON_MULTI_USEDEP}]
+		dev-python/numpy[${PYTHON_MULTI_USEDEP}]
+		dev-python/pivy[${PYTHON_MULTI_USEDEP}]
+		dev-python/pyside:2[svg,gui,x11extras,xmlpatterns,${PYTHON_MULTI_USEDEP}]
+		addonmgr? ( dev-python/git-python[${PYTHON_MULTI_USEDEP}] )
+	')
 	dev-libs/libspnav[X]
 	dev-libs/xerces-c[icu]
-	dev-python/matplotlib[${PYTHON_USEDEP}]
-	dev-python/numpy[${PYTHON_USEDEP}]
-	dev-python/pivy[${PYTHON_USEDEP}]
-	dev-python/pyside:2[svg,gui,x11extras,xmlpatterns,${PYTHON_USEDEP}]
 	dev-qt/assistant:5
 	dev-qt/designer:5
 	dev-qt/qtconcurrent:5
@@ -91,23 +96,22 @@ RDEPEND="${PYTHON_DEPS}
 	media-libs/coin[draggers(+),manipulators(+),nodekits(+),simage(+)]
 	media-libs/freetype
 	sci-libs/flann[mpi?,openmp]
-	sci-libs/med[mpi(+)?,python,${PYTHON_USEDEP}]
+	sci-libs/med[mpi(+)?,python,${PYTHON_SINGLE_USEDEP}]
 	sci-libs/orocos_kdl:=
 	sys-libs/zlib
 	virtual/glu
 	virtual/libusb:1
-	addonmgr? ( dev-python/git-python[${PYTHON_USEDEP}] )
-	fem? ( sci-libs/vtk[boost,mpi?,python,qt5,rendering,${PYTHON_USEDEP}] )
+	fem? ( sci-libs/vtk[boost,mpi?,python,qt5,rendering,${PYTHON_SINGLE_USEDEP}] )
 	oce? ( sci-libs/oce:=[vtk(+)] )
 	!oce? ( sci-libs/opencascade:7.3.0=[vtk(+)] )
 	mesh? (
-		dev-python/pybind11[${PYTHON_USEDEP}]
+		dev-python/pybind11[${PYTHON_SINGLE_USEDEP}]
 		sci-libs/hdf5:=[fortran,mpi?,zlib]
 	)
 	mpi? (
 		virtual/mpi[cxx,fortran,threads]
 	)
-	netgen? ( >=sci-mathematics/netgen-6.2.1810[mpi?,python,opencascade,${PYTHON_USEDEP}] )
+	netgen? ( >=sci-mathematics/netgen-6.2.1810[mpi?,python,opencascade,${PYTHON_SINGLE_USEDEP}] )
 	pcl? ( sci-libs/pcl:=[opengl,openni2(+),qt5(+),vtk(+)] )
 	openscad? ( media-gfx/openscad )
 "
@@ -132,6 +136,9 @@ src_prepare() {
 	# Fix OpenCASCADE lookup
 	sed -i -e "s#/usr/include/opencascade#${CASROOT}/include/opencascade#" \
 			-e "s#/opt/opencascade/lib#${CASROOT}/lib#" cMake/FindOpenCasCade.cmake || die
+
+	# Fix desktop file
+	sed -i 's/Exec=FreeCAD/Exec=freecad/' src/XDGData/org.freecadweb.FreeCAD.desktop || die
 
 	cmake_src_prepare
 
@@ -187,7 +194,7 @@ src_configure() {
 		-DBUILD_TUX=$(usex tux)
 		-DBUILD_VR=OFF
 		-DBUILD_WEB=ON # needed by start workspace
-		-DCMAKE_INSTALL_DATADIR=/usr/share/${PN}/data
+		-DCMAKE_INSTALL_DATADIR=/usr/share/${PN}
 		-DCMAKE_INSTALL_DOCDIR=/usr/share/doc/${PF}
 		-DCMAKE_INSTALL_INCLUDEDIR=/usr/include/${PN}
 		-DCMAKE_INSTALL_PREFIX=/usr/$(get_libdir)/${PN}
@@ -213,5 +220,5 @@ src_install() {
 
 	mv "${ED}"/usr/$(get_libdir)/freecad/share/* "${ED}"/usr/share || die "failed to move shared resources"
 
-	python_optimize "${ED}"/usr/share/${PN}/data/Mod/ "${ED}"/usr/$(get_libdir)/${PN}{/Ext,/Mod}/
+	python_optimize "${ED}"/usr/share/${PN}/Mod/ "${ED}"/usr/$(get_libdir)/${PN}{/Ext,/Mod}/
 }
