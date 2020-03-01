@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6,7,8} )
+PYTHON_COMPAT=( python3_{6,7} )
 
 inherit cmake python-single-r1
 
@@ -24,10 +24,12 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 BDEPEND="
 	test? (
 		dev-cpp/catch:0
-		dev-libs/boost:=[python,${PYTHON_USEDEP}]
-		dev-python/numpy[${PYTHON_USEDEP}]
-		dev-python/pytest[${PYTHON_USEDEP}]
-		sci-libs/scipy[${PYTHON_USEDEP}]
+		$(python_gen_cond_dep '
+			dev-libs/boost:=[python,${PYTHON_MULTI_USEDEP}]
+			dev-python/numpy[${PYTHON_MULTI_USEDEP}]
+			dev-python/pytest[${PYTHON_MULTI_USEDEP}]
+			sci-libs/scipy[${PYTHON_MULTI_USEDEP}]
+		')
 	)
 "
 
