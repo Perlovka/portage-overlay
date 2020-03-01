@@ -135,7 +135,7 @@ src_prepare() {
 
 	# Fix OpenCASCADE lookup
 	sed -i -e "s#/usr/include/opencascade#${CASROOT}/include/opencascade#" \
-			-e "s#/opt/opencascade/lib#${CASROOT}/lib#" cMake/FindOpenCasCade.cmake || die
+			-e "s#/usr/lib\$#${CASROOT}/lib NO_DEFAULT_PATH#" cMake/FindOpenCasCade.cmake || die
 
 	# Fix desktop file
 	sed -i 's/Exec=FreeCAD/Exec=freecad/' src/XDGData/org.freecadweb.FreeCAD.desktop || die
@@ -202,7 +202,7 @@ src_configure() {
 		-DFREECAD_USE_EXTERNAL_KDL=ON
 		-DFREECAD_USE_EXTERNAL_ZIPIOS=OFF # doesn't work yet, also no package in gentoo tree
 		-DFREECAD_USE_FREETYPE=ON
-		-DFREECAD_USE_OCC_VARIANT=$(usex oce "\"Community Edition\"" "\"Official Version\"")
+		-DFREECAD_USE_OCC_VARIANT="$(usex oce "Community Edition" "Official Version")"
 		-DFREECAD_USE_PCL=$(usex pcl)
 		-DFREECAD_USE_PYBIND11=$(usex mesh)
 		-DOCCT_CMAKE_FALLBACK=ON # don't use occt-config which isn't included in opencascade for Gentoo
