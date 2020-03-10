@@ -1,0 +1,19 @@
+--- src/frmmain.cpp	2020-03-09 13:45:39.958241818 +0200
++++ src/frmmain.cpp	2020-03-09 14:03:47.867584487 +0200
+@@ -32,6 +32,7 @@
+ #include <QAction>
+ #include <QLayout>
+ #include <QMimeData>
++#include <QStandardPaths>
+ #include "frmmain.h"
+ #include "ui_frmmain.h"
+ 
+@@ -85,7 +86,7 @@
+                        << "black";
+ 
+     // Loading settings
+-    m_settingsFileName = qApp->applicationDirPath() + "/settings.ini";
++    m_settingsFileName = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/settings.ini";
+     preloadSettings();
+ 
+     m_settings = new frmSettings(this);

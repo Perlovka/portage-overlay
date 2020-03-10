@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Candle
+Exec=candle
+Icon=candle
+Terminal=false
+Categories=Development;
+Comment=GRBL controller application with G-Code visualizer
