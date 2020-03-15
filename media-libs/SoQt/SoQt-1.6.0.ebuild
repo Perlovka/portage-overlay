@@ -5,12 +5,14 @@ EAPI=7
 
 inherit cmake
 
+SOANYDATA_COMMIT_SHA="3ff6e9203fbb0cc08a2bdf209212b7ef4d78a1f2"
+SOGUI_COMMIT_SHA="4b0019d1ecc2b9ad3e77333b9f243b57a15ebc4e"
+
 DESCRIPTION="The glue between Coin3D and Qt"
 HOMEPAGE="https://bitbucket.org/Coin3D/soqt"
 SRC_URI="https://github.com/coin3d/soqt/archive/SoQt-${PV}.tar.gz
-		https://github.com/coin3d/cpack.d/archive/master.zip -> coin3d-cpack.d-master.zip
-		https://github.com/coin3d/soanydata/archive/master.zip -> coin3d-soanydata-master.zip
-		https://github.com/coin3d/sogui/archive/master.zip -> coin3d-sogui-master.zip"
+		https://github.com/coin3d/soanydata/archive/${SOANYDATA_COMMIT_SHA}.tar.gz -> coin3d-soanydata-${SOANYDATA_COMMIT_SHA}.tar.gz
+		https://github.com/coin3d/sogui/archive/${SOGUI_COMMIT_SHA}.zip -> coin3d-sogui-${SOGUI_COMMIT_SHA}.zip"
 
 RESTRICT="primaryuri"
 
@@ -36,9 +38,9 @@ S="${WORKDIR}/${PN,,}-${P}"
 
 src_prepare() {
 	default
-	mv "${WORKDIR}/cpack.d-master" "${S}/cpack.d" || die
-	mv "${WORKDIR}/soanydata-master" "${S}/data" || die
-	mv "${WORKDIR}/sogui-master" "${S}/src/Inventor/Qt/common" || die
+	mv "${WORKDIR}/soanydata-${SOANYDATA_COMMIT_SHA}" "${S}/data" || die
+	mv "${WORKDIR}/sogui-${SOGUI_COMMIT_SHA}" "${S}/src/Inventor/Qt/common" || die
+	sed -i '/add_subdirectory(cpack.d)/d' CMakeLists.txt || die
 
 	cmake_src_prepare
 }
