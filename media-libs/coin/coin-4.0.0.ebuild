@@ -7,8 +7,7 @@ inherit cmake flag-o-matic
 
 DESCRIPTION="A high-level 3D graphics toolkit, fully compatible with SGI Open Inventor 2.1"
 HOMEPAGE="https://github.com/coin3d/coin/wiki"
-SRC_URI="https://github.com/coin3d/coin/archive/Coin-${PV}.tar.gz -> ${P}.tar.gz
-	https://github.com/coin3d/cpack.d/archive/master.zip -> coin3d-cpack.d-master.zip"
+SRC_URI="https://github.com/coin3d/coin/archive/Coin-${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="|| ( GPL-2 PEL )"
 KEYWORDS="~amd64 ~arm ~hppa ~ppc ~ppc64 ~x86"
@@ -48,7 +47,9 @@ DOCS=(
 
 src_prepare() {
 	default
-	mv "${WORKDIR}/cpack.d-master" "${S}/cpack.d" || die
+
+	sed -i '/add_subdirectory(cpack.d)/d' CMakeLists.txt || die
+
 	cmake_src_prepare
 }
 
