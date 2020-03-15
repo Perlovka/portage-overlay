@@ -7,8 +7,7 @@ inherit cmake
 
 DESCRIPTION="Coin GUI binding for Qt"
 HOMEPAGE="https://github.com/coin3d/quarter"
-SRC_URI="https://github.com/coin3d/quarter/archive/Quarter-${PV}.tar.gz
-		https://github.com/coin3d/cpack.d/archive/master.zip -> coin3d-cpack.d-master.zip"
+SRC_URI="https://github.com/coin3d/quarter/archive/Quarter-${PV}.tar.gz"
 RESTRICT="primaryuri"
 
 LICENSE="|| ( GPL-2 PEL )"
@@ -32,7 +31,7 @@ src_prepare() {
 	default
 
 	sed -i '/# Fail early/a list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/SIMCMakeMacros")' CMakeLists.txt || die
-	mv "${WORKDIR}/cpack.d-master" "${S}/cpack.d" || die
+	sed -i '/add_subdirectory(cpack.d)/d' CMakeLists.txt || die
 	cmake_src_prepare
 }
 
