@@ -12,27 +12,27 @@
 	</upstream>
 	<use>
 		<flag name="addonmgr">
-			Build the addon manager module for automatic handling of 3rd 
+			Build the addon manager module for automatic handling of 3rd
 			party addons
 		</flag>
 		<flag name="arch">
-			Build the architecture workbench for working with architectural 
+			Build the architecture workbench for working with architectural
 			elements
 		</flag>
 		<flag name="assembly">
 			Build the assembly module
 		</flag>
 		<flag name="complete">
-			Build the complete workbench which holds all commands and features 
-			from all the modules and workbenches which met certain quality 
+			Build the complete workbench which holds all commands and features
+			from all the modules and workbenches which met certain quality
 			criteria
 		</flag>
 		<flag name="drawing">
-			Build the drawing module and workbench to display 3D work on a 
+			Build the drawing module and workbench to display 3D work on a
 			2D sheet
 		</flag>
 		<flag name="fem">
-			Build the FEM module and workbench which provides Finite Element 
+			Build the FEM module and workbench which provides Finite Element
 			Analysis (FEA) workflows
 		</flag>
 		<flag name="idf">
@@ -51,22 +51,25 @@
 			Build the material module and workbench to work with materials
 		</flag>
 		<flag name="mesh">
-			Build the mesh module and workbench to work with triangulated 
+			Build the mesh module and workbench to work with triangulated
 			meshes
 		</flag>
 		<flag name="netgen">
 			Support <pkg>sci-mathematics/netgen</pkg> with the FEM workbench
 		</flag>
+		<flag name="oce">
+			Use sci-libs/oce instead of sci-libs/opencascade
+		</flag>
 		<flag name="openscad">
-			Build the OpenSCAD module for interoperability with OpenSCAD 
+			Build the OpenSCAD module for interoperability with OpenSCAD
 			and repairing Constructive Solid Geometry (CSG) history
 		</flag>
 		<flag name="part_design">
-			Build the part design module and workbench for build part shapes 
+			Build the part design module and workbench for build part shapes
 			from sketches
 		</flag>
 		<flag name="path"><!-- FIXME: auto-enable throught robot? -->
-			Build the path module and workbench to procude G-Code instructions 
+			Build the path module and workbench to procude G-Code instructions
 			for CNC
 		</flag>
 		<flag name="plot">
@@ -82,22 +85,22 @@
 			Build the raytracing module and workbench for raytracing and rendering
 		</flag>
 		<flag name="reverseengineering">
-			Build the reverse engineering module and workbench which provides 
-			specific tools to convert shapes/solids/meshes into parametric 
+			Build the reverse engineering module and workbench which provides
+			specific tools to convert shapes/solids/meshes into parametric
 			FreeCAD-compatible features
 		</flag>
 		<flag name="robot">
 			Build the robot module and workbench for studying robot movements
 		</flag>
 		<flag name="ship">
-			Build the ship module and workbench which works over ship entities, 
+			Build the ship module and workbench which works over ship entities,
 			that must be created on top of provided geometry
 		</flag>
 		<flag name="show">
 			Build the show module, a helper module for visibility automation
 		</flag>
 		<flag name="spreadsheet">
-			Build the spreadsheet module and workbench to create and manipulate 
+			Build the spreadsheet module and workbench to create and manipulate
 			spreadsheet data
 		</flag>
 		<flag name="surface">

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_6 )
+PYTHON_COMPAT=( python3_{6,7,8} )
 
 inherit check-reqs cmake desktop python-single-r1 xdg
 
@@ -17,7 +17,7 @@ if [[ ${PV} == *9999 ]]; then
 else
 	SRC_URI="https://github.com/FreeCAD/FreeCAD/archive/${PV}.tar.gz -> ${P}.tar.gz"
 	RESTRICT="primaryuri"
-	KEYWORDS="~amd64"
+	KEYWORDS="~amd64 ~x86"
 	S="${WORKDIR}/FreeCAD-${PV}"
 fi
 
@@ -61,9 +61,6 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 #	dev-libs/zipios
 
 BDEPEND="
-	$(python_gen_cond_dep '
-		dev-python/pyside-tools:2[${PYTHON_MULTI_USEDEP}]
-	')
 	dev-lang/swig
 	doc? (
 		app-arch/p7zip
@@ -78,8 +75,8 @@ RDEPEND="${PYTHON_DEPS}
 		dev-python/matplotlib[${PYTHON_MULTI_USEDEP}]
 		dev-python/numpy[${PYTHON_MULTI_USEDEP}]
 		dev-python/pivy[${PYTHON_MULTI_USEDEP}]
-		dev-python/pyside:2[svg,gui,x11extras,xmlpatterns,${PYTHON_MULTI_USEDEP}]
-		addonmgr? ( dev-python/git-python[${PYTHON_MULTI_USEDEP}] )
+		dev-python/pyside2[svg,gui,x11extras,xmlpatterns,${PYTHON_MULTI_USEDEP}]
+		addonmgr? ( dev-python/GitPython[${PYTHON_MULTI_USEDEP}] )
 	')
 	dev-libs/libspnav[X]
 	dev-libs/xerces-c[icu]
@@ -105,7 +102,9 @@ RDEPEND="${PYTHON_DEPS}
 	oce? ( sci-libs/oce:=[vtk(+)] )
 	!oce? ( sci-libs/opencascade:7.3.0=[vtk(+)] )
 	mesh? (
-		dev-python/pybind11[${PYTHON_SINGLE_USEDEP}]
+		$(python_gen_cond_dep '
+				dev-python/pybind11[${PYTHON_MULTI_USEDEP}]
+		')
 		sci-libs/hdf5:=[fortran,mpi?,zlib]
 	)
 	mpi? (
