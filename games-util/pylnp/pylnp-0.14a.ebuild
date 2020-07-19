@@ -1,17 +1,17 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python2_7 python3_{6,7} )
+PYTHON_COMPAT=( python3_{6,7,8} )
 
 inherit desktop python-single-r1 vcs-snapshot xdg
 
-DESCRIPTION="Cross-platform re-implementation of the Lazy Newb Pack launcher"
-HOMEPAGE="https://bitbucket.org/Pidgeot/python-lnp"
-SRC_URI="https://bitbucket.org/Pidgeot/python-lnp/get/${PV}.tar.gz -> ${P}.tar.gz"
+DESCRIPTION="A launcher for Dwarf Fortress"
+HOMEPAGE="https://github.com/Pidgeot/python-lnp"
+SRC_URI="https://github.com/Pidgeot/python-lnp/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
-LICENSE="BSD"
+LICENSE="ISC"
 SLOT="0"
 KEYWORDS="~amd64"
 IUSE="test"
@@ -30,11 +30,6 @@ src_prepare() {
 	sed -i -e 's/from core/from pylnp.core/' \
 		-e '/sys.path.insert/d' launch.py || die
 }
-
-#python_prepare_all() {
-#	! use test && export PYTEST_RUNNER='false'
-#	distutils-r1_python_prepare_all
-#}
 
 src_install() {
 	python_newexe launch.py pylnp
