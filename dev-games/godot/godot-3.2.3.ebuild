@@ -30,7 +30,7 @@ IUSE="
 	+mbedtls
 	+opus
 	pulseaudio
-	theora
+	+theora
 	+udev
 	+vorbis
 	+webp
