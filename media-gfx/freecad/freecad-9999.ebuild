@@ -13,6 +13,7 @@ HOMEPAGE="https://www.freecadweb.org/"
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/FreeCAD/FreeCAD.git"
+#    EGIT_COMMIT="75b8ff36658755310fca9536000505016a2354a3"
 	KEYWORDS=""
 else
 	SRC_URI="https://github.com/FreeCAD/FreeCAD/archive/${PV}.tar.gz -> ${P}.tar.gz"
@@ -75,7 +76,7 @@ RDEPEND="${PYTHON_DEPS}
 		dev-python/matplotlib[${PYTHON_MULTI_USEDEP}]
 		dev-python/numpy[${PYTHON_MULTI_USEDEP}]
 		dev-python/pivy[${PYTHON_MULTI_USEDEP}]
-		dev-python/pyside2[svg,gui,x11extras,xmlpatterns,${PYTHON_MULTI_USEDEP}]
+		dev-python/pyside2:=[svg,gui,x11extras,xmlpatterns,${PYTHON_MULTI_USEDEP}]
 		addonmgr? ( dev-python/GitPython[${PYTHON_MULTI_USEDEP}] )
 	')
 	dev-libs/libspnav[X]
@@ -100,7 +101,7 @@ RDEPEND="${PYTHON_DEPS}
 	virtual/libusb:1
 	fem? ( sci-libs/vtk[boost,mpi?,python,qt5,rendering,${PYTHON_SINGLE_USEDEP}] )
 	oce? ( sci-libs/oce:=[vtk(+)] )
-	!oce? ( sci-libs/opencascade:7.3.0=[vtk(+)] )
+	!oce? ( sci-libs/opencascade:7.4.0=[vtk(+)] )
 	mesh? (
 		$(python_gen_cond_dep '
 				dev-python/pybind11[${PYTHON_MULTI_USEDEP}]
