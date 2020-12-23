@@ -6,9 +6,7 @@ inherit autotools flag-o-matic
 
 DESCRIPTION="A tool for monitoring, capturing and storing TCP connections flows"
 HOMEPAGE="https://github.com/simsong/tcpflow"
-SRC_URI="
-    https://api.github.com/repos/simsong/tcpflow/tarball/a5965b11a332fe908ab1ed136b14803920e8ecdb -> ${P}.tar.gz
-"
+SRC_URI="https://api.github.com/repos/simsong/tcpflow/tarball/a5965b11a332fe908ab1ed136b14803920e8ecdb -> ${P}.tar.gz"
 
 LICENSE="GPL-3"
 KEYWORDS="amd64 ~arm ppc x86 ~amd64-linux ~x86-linux ~x64-macos ~x86-macos"
