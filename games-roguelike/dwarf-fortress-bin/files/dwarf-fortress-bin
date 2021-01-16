@@ -1,0 +1,15 @@
+#!/bin/sh
+
+src_dir=/opt/dwarf-fortress
+dst_dir="$HOME/.dwarf-fortress"
+
+if [ ! -d "$dst_dir" ]; then
+    mkdir -p "$dst_dir"
+	cp -a "$src_dir"/* "$dst_dir"/
+    if [[ -f "$dst_dir"/dfhack.init-example ]]; then
+        cp "$dst_dir"/dfhack.init-example "$dst_dir"/dfhack.init
+    fi
+fi
+
+cd "$dst_dir" || exit
+exec ./libs/Dwarf_Fortress "$@"
