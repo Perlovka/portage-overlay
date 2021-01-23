@@ -3,11 +3,12 @@
 
 EAPI=7
 
-inherit cmake desktop pax-utils
+LUA_COMPAT=( lua5-{1..3} luajit )
+
+inherit cmake desktop lua-single pax-utils
 
 E_COMMIT_SHA="c10bdc3cfec1c86b11eb929f5e2564babade8206"
 #E_COMMIT_SHA="04c757322c079a8b9f13a51d0dc4c37e5a5b7965" # titlebar bug
-
 
 DESCRIPTION="A dynamic floating and tiling window manager"
 HOMEPAGE="https://awesomewm.org/"
@@ -20,12 +21,12 @@ S="${WORKDIR}/${PN}-${E_COMMIT_SHA}"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86"
-IUSE="dbus doc gnome luajit test"
+IUSE="dbus doc gnome test"
+REQUIRED_USE="${LUA_REQUIRED_USE}"
 RESTRICT="test"
 
 RDEPEND="
-	>=dev-lang/lua-5.1:0
-	luajit? ( dev-lang/luajit:2 )
+	${LUA_DEPS}
 	dev-libs/glib:2
 	>=dev-libs/libxdg-basedir-1
 	>=dev-lua/lgi-0.8
@@ -79,11 +80,9 @@ src_configure() {
 		-DWITH_DBUS=$(usex dbus ON OFF)
 		-DGENERATE_DOC=$(usex doc)
 		-DAWESOME_DOC_PATH="${EPREFIX}"/usr/share/doc/${PF}
+		-DLUA_INCLUDE_DIR="$(lua_get_include_dir)"
+		-DLUA_LIBRARY="$(lua_get_shared_lib)"
 	)
-	if use luajit; then
-		mycmakeargs+=("-DLUA_INCLUDE_DIR=${EPREFIX}/usr/include/luajit-2.0")
-		mycmakeargs+=("-DLUA_LIBRARY=${EPREFIX}/usr/$(get_libdir)/libluajit-5.1.so")
-	fi
 	cmake_src_configure
 }
 
