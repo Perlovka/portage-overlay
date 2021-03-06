@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=(python3_{7,8})
-DISTUTILS_USE_SETUPTOOLS=rdepend
+DISTUTILS_USE_SETUPTOOLS=bdepend
 
 inherit desktop distutils-r1
 
