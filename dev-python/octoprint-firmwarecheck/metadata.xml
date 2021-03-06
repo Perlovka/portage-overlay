@@ -6,6 +6,6 @@
     <name>Michael Perlov</name>
   </maintainer>
   <upstream>
-    <remote-id type="github">OctoPrint/OctoPrint</remote-id>
+    <remote-id type="github">OctoPrint/OctoPrint-FirmwareCheck</remote-id>
   </upstream>
 </pkgmetadata>
