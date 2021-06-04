@@ -1,16 +1,15 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_7 )
+PYTHON_COMPAT=( python3_{8,9} )
 
 inherit check-reqs cmake flag-o-matic pax-utils python-single-r1 \
 	toolchain-funcs xdg-utils
 
 DESCRIPTION="3D Creation/Animation/Publishing System"
 HOMEPAGE="https://www.blender.org"
-
 SRC_URI="https://download.blender.org/source/${P}.tar.xz"
 
 # Blender can have letters in the version string,
@@ -30,7 +29,7 @@ RESTRICT="!test? ( test )"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	alembic? ( openexr )
 	cuda? ( cycles )
-	cycles? ( openexr tiff openimageio )
+	cycles? ( openexr tbb tiff openimageio )
 	elbeem? ( tbb )
 	opencl? ( cycles )
 	openvdb? (
@@ -42,11 +41,15 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 
 RDEPEND="${PYTHON_DEPS}
 	dev-libs/boost:=[nls?,threads(+)]
+	dev-libs/gmp
+	dev-libs/pugixml
 	dev-libs/lzo:2=
 	$(python_gen_cond_dep '
 		dev-python/numpy[${PYTHON_USEDEP}]
 		dev-python/requests[${PYTHON_USEDEP}]
 	')
+	media-gfx/potrace
+	media-libs/fontconfig:=
 	media-libs/freetype:=
 	media-libs/glew:*
 	media-libs/libpng:=
@@ -60,6 +63,7 @@ RDEPEND="${PYTHON_DEPS}
 	collada? ( >=media-libs/opencollada-1.6.68 )
 	color-management? ( media-libs/opencolorio )
 	cuda? ( dev-util/nvidia-cuda-toolkit:= )
+	cycles? ( media-libs/freeglut )
 	ffmpeg? ( media-video/ffmpeg:=[x264,mp3,encode,theora,jpeg2k?] )
 	fftw? ( sci-libs/fftw:3.0= )
 	!headless? (
@@ -79,7 +83,7 @@ RDEPEND="${PYTHON_DEPS}
 	oidn? ( media-libs/oidn )
 	openal? ( media-libs/openal )
 	opencl? ( virtual/opencl )
-	openimageio? ( media-libs/openimageio )
+	openimageio? ( media-libs/openimageio:= )
 	openexr? (
 		media-libs/ilmbase:=
 		media-libs/openexr:=
@@ -89,7 +93,7 @@ RDEPEND="${PYTHON_DEPS}
 		~media-gfx/openvdb-7.0.0[abi6-compat(-)?,abi7-compat(-)?]
 		dev-libs/c-blosc:=
 	)
-	osl? ( media-libs/osl )
+	osl? ( media-libs/osl:= )
 	sdl? ( media-libs/libsdl2[sound,joystick] )
 	sndfile? ( media-libs/libsndfile )
 	tbb? ( dev-cpp/tbb )
@@ -114,6 +118,8 @@ BDEPEND="
 	)
 	nls? ( sys-devel/gettext )
 "
+
+CMAKE_BUILD_TYPE="Release"
 
 blender_check_requirements() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
@@ -179,7 +185,7 @@ src_configure() {
 		-DWITH_CODEC_FFMPEG=$(usex ffmpeg)
 		-DWITH_CODEC_SNDFILE=$(usex sndfile)
 		-DWITH_CXX_GUARDEDALLOC=$(usex debug)
-		-DWITH_CYCLES_DEVICE_CUDA=$(usex cuda)
+		-DWITH_CYCLES_DEVICE_CUDA=$(usex cuda TRUE FALSE)
 		-DWITH_CYCLES=$(usex cycles)
 		-DWITH_CYCLES_DEVICE_OPENCL=$(usex opencl)
 		-DWITH_CYCLES_EMBREE=$(usex embree)
@@ -188,6 +194,7 @@ src_configure() {
 		-DWITH_CYCLES_OSL=$(usex osl)
 		-DWITH_DOC_MANPAGE=$(usex man)
 		-DWITH_FFTW3=$(usex fftw)
+		-DWITH_GHOST_X11=$(usex !headless)
 		-DWITH_GTESTS=$(usex test)
 		-DWITH_HEADLESS=$(usex headless)
 		-DWITH_INSTALL_PORTABLE=OFF
@@ -302,6 +309,15 @@ pkg_postinst() {
 	ewarn "If you are concerned about security, file a bug upstream:"
 	ewarn "  https://developer.blender.org/"
 	ewarn
+
+	if use python_single_target_python3_8; then
+		elog "You've enabled python-3.8 support for blender, which is still experimental."
+		elog "If you experience breakages with e.g. plugins, please switch to"
+		elog "python_single_target_python3_7 instead."
+		elog "Bug: https://bugs.gentoo.org/737388"
+		elog
+	fi
+
 	xdg_icon_cache_update
 	xdg_mimeinfo_database_update
 	xdg_desktop_database_update
