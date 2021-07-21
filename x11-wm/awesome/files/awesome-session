@@ -2,7 +2,7 @@
 # Awesome Xsession starter, based on Xsession shipped by x11-apps/xinit-1.0.5-r1
 
 # redirect errors to a file in user's home directory if we can
-for errfile in "$HOME/.awesome-errors" "${TMPDIR-/tmp}/awesome-$USER" "/tmp/awesome-$USER"
+for errfile in "/dev/shm/.awesome-errors" "$HOME/.awesome-errors" "${TMPDIR-/tmp}/awesome-$USER" "/tmp/awesome-$USER"
 do
 	if ( cp /dev/null "$errfile" 2> /dev/null )
 	then
