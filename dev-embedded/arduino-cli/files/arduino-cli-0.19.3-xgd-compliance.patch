@@ -1,0 +1,122 @@
+--- arduino-cli-0.19.3/commands/instances.go.orig	2021-11-04 22:52:19.379758671 +0200
++++ arduino-cli-0.19.3/commands/instances.go	2021-11-04 22:54:14.328015360 +0200
+@@ -124,11 +124,12 @@
+ 	}
+ 
+ 	// Create package manager
++	cacheDir := paths.New(configuration.Settings.GetString("directories.Cache"))
+ 	instance.PackageManager = packagemanager.NewPackageManager(
+ 		dataDir,
+ 		configuration.PackagesDir(configuration.Settings),
+ 		downloadsDir,
+-		dataDir.Join("tmp"),
++		cacheDir.Join("tmp"),
+ 	)
+ 
+ 	// Create library manager and add libraries directories
+diff -ur arduino-cli-0.19.3/configuration.orig/configuration.go arduino-cli-0.19.3/configuration/configuration.go
+--- arduino-cli-0.19.3/configuration.orig/configuration.go	2021-11-04 20:55:41.703721609 +0200
++++ arduino-cli-0.19.3/configuration/configuration.go	2021-11-04 22:39:29.462627987 +0200
+@@ -51,10 +51,10 @@
+ 		settings.SetConfigName(strings.TrimSuffix(configFilePath.Base(), configFilePath.Ext()))
+ 		settings.AddConfigPath(configFilePath.Parent().String())
+ 	} else {
+-		configDir := settings.GetString("directories.Data")
++		configDir := settings.GetString("directories.Config")
+ 		// Get default data path if none was provided
+ 		if configDir == "" {
+-			configDir = getDefaultArduinoDataDir()
++			configDir = getDefaultArduinoConfigDir()
+ 		}
+ 
+ 		settings.SetConfigName("arduino-cli")
+@@ -82,17 +82,35 @@
+ 	settings.BindPFlag("output.no_color", cmd.Flag("no-color"))
+ }
+ 
+-// getDefaultArduinoDataDir returns the full path to the default arduino folder
+-func getDefaultArduinoDataDir() string {
++// getUserHomeDir returns the full path to the user home directory
++func getUserHomeDir() string {
+ 	userHomeDir, err := os.UserHomeDir()
+ 	if err != nil {
+ 		feedback.Errorf(tr("Unable to get user home dir: %v"), err)
+ 		return "."
+ 	}
++    return userHomeDir
++}
++
++// getDefaultArduinoConfigDir returns the full path to the user config directory
++func getDefaultArduinoConfigDir() string {
++	userHomeDir := getUserHomeDir()
++    return filepath.Join(userHomeDir, ".config/arduino-cli")
++}
++
++// getDefaultArduinoCacheDir returns the full path to the user cache directory
++func getDefaultArduinoCacheDir() string {
++	userHomeDir := getUserHomeDir()
++    return filepath.Join(userHomeDir, ".cache/arduino-cli")
++}
++
++// getDefaultArduinoDataDir returns the full path to the default arduino folder
++func getDefaultArduinoDataDir() string {
++	userHomeDir := getUserHomeDir()
+ 
+ 	switch runtime.GOOS {
+ 	case "linux":
+-		return filepath.Join(userHomeDir, ".arduino15")
++		return filepath.Join(userHomeDir, ".local/share/arduino-cli")
+ 	case "darwin":
+ 		return filepath.Join(userHomeDir, "Library", "Arduino15")
+ 	case "windows":
+@@ -109,11 +127,7 @@
+ 
+ // getDefaultUserDir returns the full path to the default user folder
+ func getDefaultUserDir() string {
+-	userHomeDir, err := os.UserHomeDir()
+-	if err != nil {
+-		feedback.Errorf(tr("Unable to get user home dir: %v"), err)
+-		return "."
+-	}
++	userHomeDir := getUserHomeDir()
+ 
+ 	switch runtime.GOOS {
+ 	case "linux":
+diff -ur arduino-cli-0.19.3/configuration.orig/defaults.go arduino-cli-0.19.3/configuration/defaults.go
+--- arduino-cli-0.19.3/configuration.orig/defaults.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3/configuration/defaults.go	2021-11-04 22:43:12.329009778 +0200
+@@ -35,8 +35,10 @@
+ 	settings.SetDefault("board_manager.additional_urls", []string{})
+ 
+ 	// arduino directories
++	settings.SetDefault("directories.Config", getDefaultArduinoConfigDir())
+ 	settings.SetDefault("directories.Data", getDefaultArduinoDataDir())
+-	settings.SetDefault("directories.Downloads", filepath.Join(getDefaultArduinoDataDir(), "staging"))
++    settings.SetDefault("directories.Cache", getDefaultArduinoCacheDir())
++	settings.SetDefault("directories.Downloads", filepath.Join(getDefaultArduinoCacheDir(), "staging"))
+ 	settings.SetDefault("directories.User", getDefaultUserDir())
+ 
+ 	// Sketch compilation
+diff -ur arduino-cli-0.19.3/configuration.orig/directories.go arduino-cli-0.19.3/configuration/directories.go
+--- arduino-cli-0.19.3/configuration.orig/directories.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3/configuration/directories.go	2021-11-04 22:45:52.358156109 +0200
+@@ -39,8 +39,8 @@
+ 		}
+ 	}
+ 
+-	if settings.IsSet("directories.User") {
+-		skDir := paths.New(settings.GetString("directories.User"))
++	if settings.IsSet("directories.Data") {
++		skDir := paths.New(settings.GetString("directories.Data"))
+ 		hwDir := skDir.Join("hardware")
+ 		if hwDir.IsDir() {
+ 			res.Add(hwDir)
+@@ -83,7 +83,7 @@
+ // LibrariesDir returns the full path to the user directory containing
+ // custom libraries
+ func LibrariesDir(settings *viper.Viper) *paths.Path {
+-	return paths.New(settings.GetString("directories.User")).Join("libraries")
++	return paths.New(settings.GetString("directories.Data")).Join("libraries")
+ }
+ 
+ // PackagesDir returns the full path to the packages folder

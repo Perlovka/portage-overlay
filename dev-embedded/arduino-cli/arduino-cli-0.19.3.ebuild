@@ -782,6 +782,10 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
+PATCHES=(
+	"${FILESDIR}/${P}-xgd-compliance.patch"
+)
+
 src_compile() {
 	GOBIN="${S}"/bin go build -ldflags "-X github.com/arduino/arduino-cli/version.versionString=${PV}" -v . || die "go build failed"
 }
