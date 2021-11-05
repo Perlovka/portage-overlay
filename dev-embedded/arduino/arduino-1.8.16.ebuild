@@ -21,9 +21,11 @@ SRC_URI="https://github.com/arduino/Arduino/archive/${PV}.tar.gz -> ${P}.tar.gz
 LICENSE="GPL-2 LGPL-2.1 CC-BY-SA-3.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE=""
+IUSE="doc"
 
 CDEPEND="dev-embedded/arduino-builder"
+
+BDEPEND="doc? ( app-text/asciidoc )"
 
 RDEPEND="${CDEPEND}
 	>=dev-util/astyle-3.1[java]
@@ -36,6 +38,7 @@ DEPEND="${CDEPEND}
 
 EANT_BUILD_TARGET="build"
 # don't run the default "javadoc" target, we don't have one.
+EANT_DOC_TARGET=""
 EANT_BUILD_XML="build/build.xml"
 EANT_EXTRA_ARGS=" -Dlight_bundle=1 -Dlocal_sources=1 -Dno_arduino_builder=1 -Dversion=${PV}"
 
@@ -47,6 +50,7 @@ S="${WORKDIR}/Arduino-${PV}"
 PATCHES=(
 	# We need to load system astyle/listserialportsc instead of bundled ones.
 	"${FILESDIR}/${PN}-1.8.5-lib-loading.patch"
+	"${FILESDIR}/${PN}-1.8.16-xdg-compliance.patch"
 )
 
 src_unpack() {
@@ -74,6 +78,7 @@ src_prepare() {
 
 src_compile() {
 	java-pkg-2_src_compile
+	/usr/bin/a2x -f manpage "${S}"/build/shared/manpage.adoc || die
 }
 
 src_install() {
@@ -114,6 +119,8 @@ src_install() {
 			"${icondir}/apps/arduino.png" \
 			"${PN}.png"
 	done
+
+	doman "${S}"/build/shared/arduino.1
 }
 
 pkg_postinst() {
