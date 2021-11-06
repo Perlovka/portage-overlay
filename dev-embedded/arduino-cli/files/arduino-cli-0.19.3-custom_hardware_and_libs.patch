@@ -1,0 +1,61 @@
+diff -ur arduino-cli-0.19.3-orig/commands/compile/compile.go arduino-cli-0.19.3-hw/commands/compile/compile.go
+--- arduino-cli-0.19.3-orig/commands/compile/compile.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3-hw/commands/compile/compile.go	2021-11-06 12:11:19.160844088 +0200
+@@ -139,6 +139,11 @@
+ 	builderCtx.OtherLibrariesDirs = paths.NewPathList(req.GetLibraries()...)
+ 	builderCtx.OtherLibrariesDirs.Add(configuration.LibrariesDir(configuration.Settings))
+ 
++    clDirs := configuration.LibraryDirectories(configuration.Settings)
++    for _, clDir := range clDirs {
++       builderCtx.OtherLibrariesDirs.Add(clDir)
++    }
++
+ 	builderCtx.LibraryDirs = paths.NewPathList(req.Library...)
+ 
+ 	if req.GetBuildPath() == "" {
+diff -ur arduino-cli-0.19.3-orig/commands/instances.go arduino-cli-0.19.3-hw/commands/instances.go
+--- arduino-cli-0.19.3-orig/commands/instances.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3-hw/commands/instances.go	2021-11-06 12:05:27.811932936 +0200
+@@ -148,6 +148,11 @@
+ 		libraries.User,
+ 	)
+ 
++    clDirs := configuration.LibraryDirectories(configuration.Settings)
++    for _, clDir := range clDirs {
++       instance.lm.AddLibrariesDir(clDir, libraries.User)
++    }
++
+ 	// Save instance
+ 	instanceID := instancesCount
+ 	instances[instanceID] = instance
+diff -ur arduino-cli-0.19.3-orig/configuration/directories.go arduino-cli-0.19.3-hw/configuration/directories.go
+--- arduino-cli-0.19.3-orig/configuration/directories.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3-hw/configuration/directories.go	2021-11-06 11:58:27.808665354 +0200
+@@ -47,6 +47,27 @@
+ 		}
+ 	}
+ 
++    if settings.IsSet("directories.Custom_hardware") {
++        chDirs := settings.GetStringSlice("directories.Custom_hardware")
++        for _, chDir := range chDirs {
++            res.Add(paths.New(chDir))
++        }
++    }
++
++	return res
++}
++
++// LibraryDirectories returns all paths that may contains custom user libraries.
++func LibraryDirectories(settings *viper.Viper) paths.PathList {
++	res := paths.PathList{}
++
++    if settings.IsSet("directories.Custom_libraries") {
++        clDirs := settings.GetStringSlice("directories.Custom_libraries")
++        for _, clDir := range clDirs {
++            res.Add(paths.New(clDir))
++        }
++    }
++
+ 	return res
+ }
+ 

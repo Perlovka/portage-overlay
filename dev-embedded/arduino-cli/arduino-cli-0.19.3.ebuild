@@ -784,7 +784,8 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+xdg-compliant"
 
 src_prepare() {
-	use xdg-compliant && eapply "${FILESDIR}/${P}-xgd-compliance.patch"
+	eapply "${FILESDIR}/${PN}-0.19.3-custom_hardware_and_libs.patch"
+	use xdg-compliant && eapply "${FILESDIR}/${PN}-0.19.3-xgd-compliance.patch"
 	eapply_user
 }
 
