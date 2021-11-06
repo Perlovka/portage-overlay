@@ -21,7 +21,7 @@ SRC_URI="https://github.com/arduino/Arduino/archive/${PV}.tar.gz -> ${P}.tar.gz
 LICENSE="GPL-2 LGPL-2.1 CC-BY-SA-3.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc"
+IUSE="doc +xdg-compliant"
 
 CDEPEND="dev-embedded/arduino-builder"
 
@@ -47,12 +47,6 @@ QA_PREBUILT="usr/share/arduino/hardware/arduino/avr/firmwares/*"
 
 S="${WORKDIR}/Arduino-${PV}"
 
-PATCHES=(
-	# We need to load system astyle/listserialportsc instead of bundled ones.
-	"${FILESDIR}/${PN}-1.8.5-lib-loading.patch"
-	"${FILESDIR}/${PN}-1.8.16-xdg-compliance.patch"
-)
-
 src_unpack() {
 	# We don't want to unpack tools, just move zip files into the work dir
 	local a=( ${A} )
@@ -65,6 +59,13 @@ src_unpack() {
 
 src_prepare() {
 	default
+
+	# We need to load system astyle/listserialportsc instead of bundled ones.
+	eapply "${FILESDIR}/${PN}-1.8.5-lib-loading.patch"
+
+	use xdg-compliant && eapply "${FILESDIR}/${PN}-1.8.16-xdg-compliance.patch"
+
+	eapply_user
 
 	# Unbundle libastyle
 	sed -i 's/\(target name="linux-libastyle-[a-zA-Z0-9]*"\)/\1 if="never"/g' "$S/build/build.xml" || die

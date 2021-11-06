@@ -5,6 +5,9 @@
 		<email>embedded@gentoo.org</email>
 		<name>Embedded Gentoo</name>
 	</maintainer>
+	<use>
+		<flag name="xdg-compliant">Respect XDG desktop specification for file locations</flag>
+	</use>
 	<upstream>
 		<remote-id type="github">arduino/Arduino</remote-id>
 	</upstream>
