@@ -781,10 +781,12 @@ SRC_URI="https://github.com/arduino/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
+IUSE="+xdg-compliant"
 
-PATCHES=(
-	"${FILESDIR}/${P}-xgd-compliance.patch"
-)
+src_prepare() {
+	use xdg-compliant && eapply "${FILESDIR}/${P}-xgd-compliance.patch"
+	eapply_user
+}
 
 src_compile() {
 	GOBIN="${S}"/bin go build -ldflags "-X github.com/arduino/arduino-cli/version.versionString=${PV}" -v . || die "go build failed"

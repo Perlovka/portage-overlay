@@ -1,6 +1,18 @@
+diff -ur arduino-cli-0.19.3-orig/cli/config/init.go arduino-cli-0.19.3/cli/config/init.go
+--- arduino-cli-0.19.3-orig/cli/config/init.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3/cli/config/init.go	2021-11-06 09:02:18.357338378 +0200
+@@ -75,7 +75,7 @@
+ 
+ 		absPath = configFileAbsPath.Parent()
+ 	case destDir == "":
+-		destDir = configuration.Settings.GetString("directories.Data")
++		destDir = configuration.Settings.GetString("directories.Config")
+ 		fallthrough
+ 	default:
+ 		absPath, err = paths.New(destDir).Abs()
 diff -ur arduino-cli-0.19.3-orig/commands/instances.go arduino-cli-0.19.3/commands/instances.go
 --- arduino-cli-0.19.3-orig/commands/instances.go	2021-10-11 18:14:04.000000000 +0300
-+++ arduino-cli-0.19.3/commands/instances.go	2021-11-05 14:26:36.967999202 +0200
++++ arduino-cli-0.19.3/commands/instances.go	2021-11-06 09:01:04.792918337 +0200
 @@ -124,11 +124,12 @@
  	}
  
@@ -17,7 +29,7 @@ diff -ur arduino-cli-0.19.3-orig/commands/instances.go arduino-cli-0.19.3/comman
  	// Create library manager and add libraries directories
 diff -ur arduino-cli-0.19.3-orig/configuration/configuration.go arduino-cli-0.19.3/configuration/configuration.go
 --- arduino-cli-0.19.3-orig/configuration/configuration.go	2021-10-11 18:14:04.000000000 +0300
-+++ arduino-cli-0.19.3/configuration/configuration.go	2021-11-05 15:03:38.379635576 +0200
++++ arduino-cli-0.19.3/configuration/configuration.go	2021-11-06 09:01:04.792918337 +0200
 @@ -51,10 +51,10 @@
  		settings.SetConfigName(strings.TrimSuffix(configFilePath.Base(), configFilePath.Ext()))
  		settings.AddConfigPath(configFilePath.Parent().String())
@@ -93,7 +105,7 @@ diff -ur arduino-cli-0.19.3-orig/configuration/configuration.go arduino-cli-0.19
  	case "linux":
 diff -ur arduino-cli-0.19.3-orig/configuration/defaults.go arduino-cli-0.19.3/configuration/defaults.go
 --- arduino-cli-0.19.3-orig/configuration/defaults.go	2021-10-11 18:14:04.000000000 +0300
-+++ arduino-cli-0.19.3/configuration/defaults.go	2021-11-05 14:26:36.967999202 +0200
++++ arduino-cli-0.19.3/configuration/defaults.go	2021-11-06 09:01:04.793918357 +0200
 @@ -35,8 +35,10 @@
  	settings.SetDefault("board_manager.additional_urls", []string{})
  
@@ -108,7 +120,7 @@ diff -ur arduino-cli-0.19.3-orig/configuration/defaults.go arduino-cli-0.19.3/co
  	// Sketch compilation
 diff -ur arduino-cli-0.19.3-orig/configuration/directories.go arduino-cli-0.19.3/configuration/directories.go
 --- arduino-cli-0.19.3-orig/configuration/directories.go	2021-10-11 18:14:04.000000000 +0300
-+++ arduino-cli-0.19.3/configuration/directories.go	2021-11-05 14:26:36.967999202 +0200
++++ arduino-cli-0.19.3/configuration/directories.go	2021-11-06 09:01:04.793918357 +0200
 @@ -39,8 +39,8 @@
  		}
  	}
