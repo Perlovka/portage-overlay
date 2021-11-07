@@ -1,3 +1,15 @@
+diff -ur arduino-cli-0.19.3-orig/cli/config/validate.go arduino-cli-0.19.3-hw/cli/config/validate.go
+--- arduino-cli-0.19.3-orig/cli/config/validate.go	2021-10-11 18:14:04.000000000 +0300
++++ arduino-cli-0.19.3-hw/cli/config/validate.go	2021-11-06 13:56:50.685640728 +0200
+@@ -26,6 +26,8 @@
+ 	"directories.data":              reflect.String,
+ 	"directories.downloads":         reflect.String,
+ 	"directories.user":              reflect.String,
++	"directories.custom_hardware":   reflect.Slice,
++	"directories.custom_libraries":  reflect.Slice,
+ 	"library.enable_unsafe_install": reflect.Bool,
+ 	"logging.file":                  reflect.String,
+ 	"logging.format":                reflect.String,
 diff -ur arduino-cli-0.19.3-orig/commands/compile/compile.go arduino-cli-0.19.3-hw/commands/compile/compile.go
 --- arduino-cli-0.19.3-orig/commands/compile/compile.go	2021-10-11 18:14:04.000000000 +0300
 +++ arduino-cli-0.19.3-hw/commands/compile/compile.go	2021-11-06 12:11:19.160844088 +0200
