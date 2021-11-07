@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit go-module
+inherit go-module bash-completion-r1
 
 DESCRIPTION="Arduino command line interface"
 HOMEPAGE="https://github.com/arduino/arduino-cli"
@@ -795,4 +795,8 @@ src_compile() {
 
 src_install() {
 	dobin ${PN}
+
+	# Generate and install bash completion file
+	./${PN} completion bash > ./arduino-cli.sh || die "failed to generate bash completion file"
+	newbashcomp ./arduino-cli.sh arduino-cli
 }
