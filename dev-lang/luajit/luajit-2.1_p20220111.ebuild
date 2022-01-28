@@ -10,7 +10,7 @@ inherit pax-utils toolchain-funcs flag-o-matic check-reqs
 
 DESCRIPTION="OpenResty fork of Just-In-Time Compiler for the Lua programming language"
 HOMEPAGE="https://github.com/openresty/luajit2"
-SRC_URI="https://github.com/openresty/luajit2/archive/v${PV//_pre/-}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/openresty/luajit2/archive/refs/tags/v${PV//_p/-}.tar.gz -> ${P}.tar.gz"
 
 SLOT="2"
 
@@ -31,7 +31,7 @@ pkg_setup() {
 	use optimization && check-reqs_pkg_setup
 }
 
-S="${WORKDIR}/luajit2-${PV//_pre/-}"
+S="${WORKDIR}/luajit2-${PV//_p/-}"
 
 src_compile() {
 	local opt xcflags;
