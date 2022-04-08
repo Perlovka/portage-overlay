@@ -10,7 +10,8 @@ HOMEPAGE="https://github.com/albfan/miraclecast"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/albfan/miraclecast.git"
+	EGIT_REPO_URI="https://github.com/Perlovka/miraclecast.git"
+	EGIT_BRANCH="optional-systemd"
 	KEYWORDS="~amd64"
 else
 	SRC_URI="https://github.com/albfan/miraclecast/archive/v${PV}.tar.gz -> ${P}.tgz"
@@ -22,7 +23,7 @@ SLOT="0"
 IUSE="systemd test"
 
 COMMONDEPEND="
-	>=dev-libs/glib-2.38
+	dev-libs/glib
 	systemd? ( sys-apps/systemd )
 	!systemd? (
 		sys-auth/elogind
@@ -30,19 +31,16 @@ COMMONDEPEND="
 	)
 "
 RDEPEND="${COMMONDEPEND}
-	media-libs/gstreamer:1.0
+	media-libs/gstreamer
+	media-plugins/gst-plugins-libav
 "
 DEPEND="${COMMONDEPEND}
-	test? ( >=dev-libs/check-0.9.11 )
+	test? ( dev-libs/check )
 "
-
-PATCHES=(
-	"${FILESDIR}/elogind_support.patch"
-)
 
 src_configure() {
 	local mycmakeargs=(
-		-DENABLE_SYSTEMD=$(usex systemd)
+		-DUSE_SYSTEMD=$(usex systemd)
 	)
 
 	cmake_src_configure
