@@ -1,12 +1,12 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 DIST_NAME=Snapback2
 DIST_AUTHOR=MIKEH
 DIST_VERSION=1.001
-inherit eutils perl-module
+inherit perl-module
 
 DESCRIPTION="Routines for support of rsync-based snapshot backup"
 
@@ -16,7 +16,6 @@ IUSE=""
 
 RDEPEND="dev-perl/Config-ApacheFormat"
 
-src_prepare() {
-	epatch "${FILESDIR}/${P}-dotinc.patch"
-	default
-}
+PATCHES=(
+	"${FILESDIR}/${P}-dotinc.patch"
+)
