@@ -25,6 +25,7 @@
     <flag name='mbedtls'>Use system mbedtls library</flag>
     <flag name='mpv'>Enable MPV support</flag>
     <flag name='network'>Enable network support (recommended)</flag>
+    <flag name='neon'>Enable optimization support for ARM NEON processors</flag>
     <flag name='openal'>Enable OpenAL audio support</flag>
     <flag name='opengl'>Enable OpenGL display support</flag>
     <flag name='osmesa'>Enable  Off-screen Mesa rendering</flag>
