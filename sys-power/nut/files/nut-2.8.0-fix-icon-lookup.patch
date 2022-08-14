@@ -1,0 +1,11 @@
+--- a/scripts/python/app/NUT-Monitor-py3qt5.in	2022-08-15 00:46:08.376655254 +0300
++++ b/scripts/python/app/NUT-Monitor-py3qt5.in	2022-08-15 00:46:35.723005624 +0300
+@@ -220,7 +220,7 @@
+         path = os.path.join( os.path.dirname( sys.argv[0] ), "icons", "256x256", filename )
+         if os.path.exists(path):
+             return path
+-        path = QStandardPaths.locate(QStandardPaths.AppDataLocation, os.path.join( "icons", "hicolor", "256x256", "apps", filename ) )
++        path = QStandardPaths.locate(QStandardPaths.GenericDataLocation, os.path.join( "icons", "hicolor", "256x256", "apps", filename ) )
+         if os.path.exists(path):
+             return path
+         raise RuntimeError("Cannot find %s resource %s" % ('icon', filename))
