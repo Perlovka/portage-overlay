@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{10..11} )
 
-inherit autotools bash-completion-r1 desktop fixheadtails flag-o-matic python-single-r1 systemd tmpfiles toolchain-funcs udev
+inherit autotools bash-completion-r1 desktop fixheadtails flag-o-matic python-single-r1 systemd tmpfiles toolchain-funcs udev xdg
 
 MY_P=${P/_/-}
 
@@ -181,9 +181,10 @@ src_install() {
 	fi
 
 	if use gui; then
-		python_fix_shebang scripts/python/app
-		python_domodule scripts/python/module/PyNUT.py
+		python_fix_shebang scripts/python/app/NUT-Monitor-py3qt5
+		python_fix_shebang scripts/python/module
 
+		python_domodule scripts/python/module/PyNUT.py
 		python_newscript scripts/python/app/NUT-Monitor-py3qt5 nut-monitor
 
 		insinto /usr/share/nut-monitor
@@ -274,12 +275,12 @@ pkg_postinst() {
 		eval chmod 0644 "${ROOT}"${NUT_CGI_FILES} 2>/dev/null
 	fi
 
+	warningmsg elog
+	udev_reload
+
 	if use gui; then
 		xdg_icon_cache_update
 	fi
-
-	warningmsg elog
-	udev_reload
 
 	# tmpfiles are only generated with systemd
 	if use systemd; then
