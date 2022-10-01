@@ -1,0 +1,65 @@
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/core/df.py Pidgeot-python-lnp-a45542d6e7fd/core/df.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/core/df.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/core/df.py	2019-08-06 18:09:52.682190213 +0300
+@@ -21,7 +21,8 @@
+     """Locates all suitable Dwairf Fortress installations (folders starting
+     with "Dwarf Fortress" or "df")"""
+     lnp.folders = tuple([
+-        os.path.basename(o) for o in glob(os.path.join(lnp.BASEDIR, '*')) if
++#        os.path.basename(o) for o in glob(os.path.join(lnp.BASEDIR, '*')) if
++        os.path.basename(o) for o in glob(os.path.join(os.path.expanduser("~"), '.dwarf-fortress')) if
+         os.path.isdir(o) and os.path.exists(os.path.join(
+             o, 'data', 'init', 'init.txt'))])
+ 
+@@ -30,7 +31,8 @@
+     first detected. If a folder name is passed as the first argument to the
+     script, that folder will be used. Otherwise, if only one valid folder was
+     detected, that one will be selected."""
+-    find_df_folders()
++#    find_df_folders()
++    lnp.folders = tuple([os.path.join(os.path.expanduser("~"), '.dwarf-fortress')])
+     if len(lnp.folders) == 1:
+         set_df_folder(lnp.folders[0])
+     if lnp.args.df_folder and lnp.args.df_folder in lnp.folders:
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/core/lnp.py Pidgeot-python-lnp-a45542d6e7fd/core/lnp.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/core/lnp.py	2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/core/lnp.py	2019-08-06 17:22:56.981028653 +0300
+@@ -128,7 +128,7 @@
+     def initialize_program(self):
+         """Initializes the main program (errorlog, path registration, etc.)."""
+         from . import paths, utilities, errorlog
+-        self.BASEDIR = '.'
++        self.BASEDIR = os.path.join(os.path.expanduser("~"), '.config/pylnp')
+         self.detect_basedir()
+         paths.clear()
+         paths.register('root', self.BASEDIR)
+@@ -183,7 +183,7 @@
+             }
+         }
+         self.config = JSONConfiguration(config_file, default_config)
+-        self.userconfig = JSONConfiguration('PyLNP.user')
++        self.userconfig = JSONConfiguration(paths.get('root', 'PyLNP.user'))
+         self.autorun = []
+         utilities.load_autorun()
+ 
+diff -urN Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/tkgui.py Pidgeot-python-lnp-a45542d6e7fd/tkgui/tkgui.py
+--- Pidgeot-python-lnp-a45542d6e7fd-orig/tkgui/tkgui.py 2018-09-17 21:13:40.000000000 +0300
++++ Pidgeot-python-lnp-a45542d6e7fd/tkgui/tkgui.py  2019-08-06 17:36:58.339393019 +0300
+@@ -153,7 +153,7 @@
+         elif windowing == "x11":
+             root.tk.call(
+                 'wm', 'iconphoto', root, "-default",
+-                get_image(get_resource('LNP')))
++                get_image(get_resource('/usr/share/icons/hicolor/64x64/apps/LNP')))
+         elif windowing == "aqua":  # OS X has no window icons
+             pass
+ 
+@@ -161,7 +161,7 @@
+         self.vcmd = (root.register(validate_number), '%P')
+ 
+         main = Frame(root)
+-        self.logo = logo = get_image(get_resource('LNPSMALL'))
++        self.logo = logo = get_image(get_resource('/usr/share/pylnp/LNPSMALL'))
+         Label(root, image=logo, anchor=CENTER).pack(fill=X)
+         main.pack(side=TOP, fill=BOTH, expand=Y)
+ 
