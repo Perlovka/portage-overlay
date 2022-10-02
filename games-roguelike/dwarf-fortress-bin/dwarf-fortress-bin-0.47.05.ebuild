@@ -14,12 +14,12 @@ SRC_URI="
 	amd64? (
 		https://www.bay12games.com/dwarves/df_${MY_PV}_linux.tar.bz2
 		dfhack? ( https://github.com/DFHack/dfhack/releases/download/${PV}-${DFHACK_R}/dfhack-${PV}-${DFHACK_R}-Linux-64bit-gcc-7.tar.bz2 )
-		twbt? ( https://github.com/mifki/df-twbt/releases/download/v${TWBT_V}/twbt-${TWBT_V}-linux.zip )
+		twbt? ( https://github.com/thurin/df-twbt/releases/download/${PV}-${DFHACK_R}/twbt-6.xx-linux64-${PV}-${DFHACK_R}.zip )
 	)
 	x86? (
 		https://www.bay12games.com/dwarves/df_${MY_PV}_linux32.tar.bz2
 		dfhack? ( https://github.com/DFHack/dfhack/releases/download/${PV}-${DFHACK_R}/dfhack-${PV}-${DFHACK_R}-Linux-32bit-gcc-7.tar.bz2 )
-		twbt? ( https://github.com/mifki/df-twbt/releases/download/v${TWBT_V}/twbt-${TWBT_V}-linux.zip )
+		twbt? ( https://github.com/thurin/df-twbt/releases/download/${PV}-${DFHACK_R}/twbt-6.xx-linux64-${PV}-${DFHACK_R}.zip )
 	)"
 
 LICENSE="free-noncomm BSD BitstreamVera"
@@ -88,15 +88,16 @@ src_install() {
 	fi
 
 	if use twbt; then
-			doins twbt/spacefox/*.png
-			insinto "${gamedir}/hack/plugins"
-			doins twbt/0.44.12-r2/twbt.plug.so
-			insinto "${gamedir}/hack/lua"
-			doins twbt/*.lua
-			insinto "${gamedir}/data/art"
-			doins twbt/[^S]*.png
-			insinto "${gamedir}/data/init"
-			doins twbt/overrides.txt
+		doins twbt/spacefox/*.png
+		insinto "${gamedir}/hack/plugins"
+		doins twbt/${PV}-${DFHACK_R}/twbt.plug.so
+		insinto "${gamedir}/hack/lua"
+		doins twbt/*.lua
+		insinto "${gamedir}/data/art"
+		doins twbt/*.png
+		insinto "${gamedir}/data/init"
+		doins twbt/overrides.txt
+		sed -i 's/^\[PRINT_MODE:.*\]/[PRINT_MODE:TWBT]/' "${D}/${gamedir}/data/init/init.txt" || die
 	fi
 
 	# install our wrapper
