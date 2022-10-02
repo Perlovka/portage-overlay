@@ -1,7 +1,8 @@
 #!/bin/sh
 
 src_dir=/opt/dwarf-fortress
-dst_dir="$HOME/.dwarf-fortress"
+default_dst="$HOME/.dwarf-fortress"
+dst_dir="${VARIABLE:-$default_dst}"
 
 if [ ! -d "$dst_dir" ]; then
     mkdir -p "$dst_dir"
@@ -12,4 +13,9 @@ if [ ! -d "$dst_dir" ]; then
 fi
 
 cd "$dst_dir" || exit
-exec ./libs/Dwarf_Fortress "$@"
+
+if [[ -x ./dfhack ]]; then
+    exec ./dfhack "$@"
+else
+    exec ./libs/Dwarf_Fortress "$@"
+fi
