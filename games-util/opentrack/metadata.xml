@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>perlovka@gmail.com</email>
+        <name>Michael Perlov</name>
+    </maintainer>
+    <upstream>
+        <remote-id type="github">opentrack/opentrack</remote-id>
+    </upstream>
+    <use>
+        <flag name="opencv">Enable opencv support. Recommended.</flag>
+        <flag name="wine">Enable Wine FreeTrack glue protocol</flag>
+    </use>
+</pkgmetadata>
