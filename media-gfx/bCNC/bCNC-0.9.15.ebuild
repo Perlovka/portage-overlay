@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=(python3_{8,9})
+PYTHON_COMPAT=(python3_{10,11})
 DISTUTILS_USE_SETUPTOOLS=rdepend
 
 inherit desktop distutils-r1
@@ -38,11 +38,11 @@ RDEPEND="
 
 src_prepare() {
 	default
-	sed -i '/opencv-python==/d' setup.py || die
-	sed -i -e 's/Terminal=true/Terminal=false/' \
+	sed -i -e 's/Categories=/Categories=Development;/' \
 			-e '/Path=/d' \
-			-e '/Terminal=.*/a Categories=Development;' \
+			-e 's/Terminal=true/Terminal=false/' \
 			-e 's/bCNC.png/bCNC/' bCNC/bCNC.desktop || die
+
 	rm -rf tests || die
 	distutils-r1_src_prepare
 }
