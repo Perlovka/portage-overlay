@@ -33,6 +33,7 @@ RDEPEND="
 	dev-python/pillow[tk,${PYTHON_USEDEP}]
 	dev-python/pyserial[${PYTHON_USEDEP}]
 	dev-python/scipy[${PYTHON_USEDEP}]
+	dev-python/svgelements[${PYTHON_USEDEP}]
 	webcam? ( media-libs/opencv[python] )
 "
 
