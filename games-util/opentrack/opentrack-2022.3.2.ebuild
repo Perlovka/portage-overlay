@@ -24,7 +24,7 @@ RESTRICT="primaryuri"
 
 DEPEND="
 	opencv? (
-		media-libs/opencv
+		media-libs/opencv[v4l]
 	)
 	dev-qt/qtcore:5
 	dev-qt/qtgui:5
