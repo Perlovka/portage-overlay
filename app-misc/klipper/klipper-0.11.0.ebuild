@@ -1,13 +1,11 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit user
-
 DESCRIPTION="Klipper is a 3d-printer firmware"
-HOMEPAGE="https://github.com/KevinOConnor/${PN}"
-SRC_URI="https://github.com/KevinOConnor/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+HOMEPAGE="https://github.com/klipper3d/${PN}"
+SRC_URI="https://github.com/klipper3d/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -18,15 +16,15 @@ RDEPEND="
 	dev-python/greenlet
 	dev-python/pyserial
 "
-DEPEND="${RDEPEND}"
+
+DEPEND="
+	${RDEPEND}
+	acct-group/klipper
+	acct-user/klipper
+"
 
 pkg_setup() {
 	KLIPPER_HOME="/var/lib/${PN}"
-
-	ebegin "Creating klipper user and group"
-	enewgroup ${PN}
-	enewuser ${PN} -1 "/bin/bash" "${KLIPPER_HOME}" "${PN},uucp"
-	eend $?
 }
 
 src_compile() {
