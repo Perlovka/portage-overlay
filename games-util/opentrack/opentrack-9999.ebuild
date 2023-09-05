@@ -23,15 +23,13 @@ IUSE="+opencv wine"
 RESTRICT="primaryuri"
 
 DEPEND="
-	opencv? (
-		media-libs/opencv
-	)
+	opencv? ( media-libs/opencv:=[v4l] )
 	dev-qt/qtcore:5
 	dev-qt/qtgui:5
 	dev-qt/linguist-tools:5
 	dev-qt/qtnetwork:5
 	dev-qt/qtwidgets:5
-	~sci-libs/onnxruntime-bin-1.6.0
+	sci-libs/onnxruntime-bin
 "
 
 RDEPEND="${DEPEND}"
