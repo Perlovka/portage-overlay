@@ -1,11 +1,11 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 README_GENTOO_SUFFIX="-r1"
 
-inherit eutils unpacker desktop readme.gentoo-r1 xdg-utils
+inherit unpacker desktop readme.gentoo-r1 xdg-utils
 
 DESCRIPTION="FOSS Java browser plugin and Web Start implementation"
 HOMEPAGE="http://icedtea.classpath.org"
@@ -23,10 +23,6 @@ RESTRICT="primaryuri test"
 RDEPEND="
 	>=virtual/jre-1.8
 "
-
-PATCHES=(
-		)
-
 xxpkg_setup() {
 	JAVA_PKG_WANT_BUILD_VM="openjdk-${SLOT} openjdk-bin-${SLOT}"
 	JAVA_PKG_WANT_SOURCE="${SLOT}"
