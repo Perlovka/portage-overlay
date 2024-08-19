@@ -1,0 +1,17 @@
+#!/sbin/openrc-run
+# Copyright 1999-2024 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+
+description="ustreamer daemon"
+
+command="/usr/bin/ustreamer"
+command_args="${USTREAMER_ARGS}"
+command_user="${USER:-nobody}:${GROUP:-video}"
+command_background=true
+output_logger="logger -e -p daemon.info -t ${RC_SVCNAME}"
+error_logger="logger -e -p daemon.err -t ${RC_SVCNAME}"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    use logger
+}

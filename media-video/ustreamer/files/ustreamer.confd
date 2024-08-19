@@ -1,0 +1,1 @@
+USTREAMER_ARGS="--drop-same-frames=30"
