@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-  <maintainer type="person">
-    <email>perlovka@gmail.com</email>
-    <name>Michael Perlov</name>
-  </maintainer>
+    <maintainer type="person">
+        <email>perlovka@gmail.com</email>
+        <name>Michael Perlov</name>
+    </maintainer>
+    <upstream>
+        <remote-id type="github">pcb2gcode/pcb2gcode</remote-id>
+    </upstream>
+    <use>
+        <flag name="geos">Use libgeos for greater accuracy and speed</flag>
+    </use>
 </pkgmetadata>

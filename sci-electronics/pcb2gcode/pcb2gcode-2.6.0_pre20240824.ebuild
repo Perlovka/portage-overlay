@@ -7,11 +7,14 @@ inherit autotools desktop qmake-utils xdg-utils
 DESCRIPTION="A command-line software for the isolation, routing and drilling of PCBs."
 HOMEPAGE="https://github.com/pcb2gcode/pcb2gcode"
 
-SRC_URI="https://github.com/${PN}/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
-	gui? ( https://github.com/${PN}/${PN}GUI/archive/refs/tags/v1.3.3.tar.gz -> ${PN}-gui-1.3.3.tar.gz )
+SRC_URI="https://github.com/${PN}/${PN}/archive/8c084afd00c6653dfa9cbf24a1dbeeb24f592aa9.tar.gz -> ${P}.tar.gz
+	gui? (
+		https://github.com/${PN}/pcb2gcodeGUI/archive/ed8acfcf162bbe281affd3dbb0818ce39e604aae.tar.gz -> ${P}-gui.tar.gz
+	)
 "
 
-GUI_DIR="pcb2gcodeGUI-1.3.3"
+S="${WORKDIR}/pcb2gcode-8c084afd00c6653dfa9cbf24a1dbeeb24f592aa9"
+GUI_DIR="pcb2gcodeGUI-ed8acfcf162bbe281affd3dbb0818ce39e604aae"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -19,7 +22,7 @@ KEYWORDS="~amd64"
 IUSE="+geos gui"
 
 DEPEND="
-	geos? ( <sci-libs/geos-3.12 )
+	geos? ( sci-libs/geos )
 	dev-cpp/glibmm
 	>=dev-cpp/gtkmm-2.4
 	dev-libs/boost
