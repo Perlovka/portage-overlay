@@ -1,0 +1,70 @@
+#!/bin/bash
+
+app_dir="/opt/ugs-platform"
+
+class_path=""
+netbeans_dirs=""
+
+for f in ${app_dir}/platform/lib/*.jar; do
+    if [[ -z $class_path ]]; then
+        class_path="$f"
+    else
+        class_path+=":$f"
+    fi
+done
+
+for d in $(cat ${app_dir}/etc/ugsplatform.clusters | sort); do
+    if [[ -z $netbeans_dirs ]]; then
+        netbeans_dirs="${app_dir}/$d"
+    else
+        netbeans_dirs+=":${app_dir}/$d"
+    fi
+done
+
+export J2D_PIXMAPS="shared"
+
+# default options located in $app_dir/etc/ugsplatform.conf
+
+#-XX:+HeapDumpOnOutOfMemoryError \
+#-XX:HeapDumpPath="/tmp/ugs-platform_heapdump.hprof" \
+
+/opt/openjdk-jre-bin-17/bin/java \
+-classpath "${class_path}" \
+-Dnetbeans.dirs="${netbeans_dirs}" \
+-Dnetbeans.home="${app_dir}/platform" \
+-Dsun.java2d.noddraw=true \
+-Dsun.awt.noerasebackground=true \
+-Dpolyglot.engine.WarnInterpreterOnly=false \
+-Dnetbeans.indexing.noFileRefresh=true \
+-Dorg.openide.text.big.file.size=20 \
+-XX:MaxRAMPercentage=85.0 \
+-XX:+IgnoreUnrecognizedVMOptions \
+--add-opens=java.base/java.net=ALL-UNNAMED \
+--add-opens=java.base/java.lang.ref=ALL-UNNAMED \
+--add-opens=java.base/java.lang=ALL-UNNAMED \
+--add-opens=java.base/java.security=ALL-UNNAMED \
+--add-opens=java.base/java.util=ALL-UNNAMED \
+--add-opens=java.base/java.nio=ALL-UNNAMED \
+--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED \
+--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED \
+--add-opens=java.desktop/javax.swing.text=ALL-UNNAMED \
+--add-opens=java.desktop/javax.swing=ALL-UNNAMED \
+--add-opens=java.desktop/java.awt=ALL-UNNAMED \
+--add-opens=java.desktop/java.awt.event=ALL-UNNAMED \
+--add-opens=java.desktop/sun.awt.X11=ALL-UNNAMED \
+--add-opens=java.desktop/javax.swing.plaf.synth=ALL-UNNAMED \
+--add-opens=java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED \
+--add-opens=java.desktop/sun.awt.shell=ALL-UNNAMED \
+--add-opens=java.desktop/sun.awt.im=ALL-UNNAMED \
+--add-exports=java.base/sun.reflect.annotation=ALL-UNNAMED \
+--add-exports=java.desktop/sun.awt=ALL-UNNAMED \
+--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED \
+--add-exports=java.desktop/com.sun.beans.editors=ALL-UNNAMED \
+--add-exports=java.desktop/sun.swing=ALL-UNNAMED \
+--add-exports=java.desktop/sun.awt.im=ALL-UNNAMED \
+--add-exports=java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED \
+org.netbeans.Main \
+--cachedir "$HOME/.cache/ugsplatform" \
+--userdir "$HOME/.local/share/ugsplatform" \
+--branding ugsplatform \
+--clearcache
