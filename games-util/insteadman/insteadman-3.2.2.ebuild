@@ -24,7 +24,6 @@ src_install() {
 	dobin insteadman
 	dobin insteadman-gtk
 
-	make_desktop_entry insteadman-gtk OpenTrack insteadman ""
 	newicon "resources/images/logo.svg" insteadman.svg
 
 	default
