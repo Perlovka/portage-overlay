@@ -1,7 +1,7 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake desktop xdg
 
@@ -23,13 +23,11 @@ IUSE="+opencv wine"
 RESTRICT="primaryuri"
 
 DEPEND="
-	opencv? ( media-libs/opencv:=[v4l] )
-	dev-qt/qtcore:5
-	dev-qt/qtgui:5
-	dev-qt/linguist-tools:5
-	dev-qt/qtnetwork:5
-	dev-qt/qtwidgets:5
-	sci-libs/onnxruntime-bin
+	dev-qt/qtbase:6
+	dev-qt/qttools:6
+	sci-libs/onnxruntime-bin:=
+	sys-process/procps
+	opencv? ( media-libs/opencv:=[features2d,v4l] )
 "
 
 RDEPEND="${DEPEND}"
@@ -41,10 +39,7 @@ src_prepare() {
 		eapply "$FILESDIR/respect_destdir_for_presets.patch"
 		eapply "$FILESDIR/fix_nn_tracker.patch"
 	fi
-
-	eapply "$FILESDIR/fix_i18n.patch"
 	cmake_src_prepare
-	xdg_src_prepare
 }
 
 src_configure() {
@@ -59,7 +54,6 @@ src_configure() {
 src_install() {
 	make_desktop_entry opentrack OpenTrack opentrack ""
 	doicon -s 24 "gui/images/${PN}.png"
-
 	cmake_src_install
 }
 

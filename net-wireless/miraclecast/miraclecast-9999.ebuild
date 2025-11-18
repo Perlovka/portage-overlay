@@ -1,7 +1,7 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake
 
@@ -23,7 +23,7 @@ SLOT="0"
 IUSE="systemd test"
 
 COMMONDEPEND="
-	dev-libs/glib
+	>=dev-libs/glib-2.38
 	systemd? ( sys-apps/systemd )
 	!systemd? (
 		sys-auth/elogind
@@ -35,8 +35,12 @@ RDEPEND="${COMMONDEPEND}
 	media-plugins/gst-plugins-libav
 "
 DEPEND="${COMMONDEPEND}
-	test? ( dev-libs/check )
+	test? ( >=dev-libs/check-0.9.11 )
 "
+
+#PATCHES=(
+#	"${FILESDIR}/elogind_support.patch"
+#)
 
 src_configure() {
 	local mycmakeargs=(

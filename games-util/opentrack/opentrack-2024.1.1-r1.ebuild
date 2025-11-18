@@ -1,7 +1,7 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake desktop xdg
 
@@ -37,8 +37,8 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	sed -e "s|share/doc/opentrack|share/doc/${P}|" -i cmake/opentrack-hier.cmake
 	eapply "$FILESDIR/fix_i18n.patch"
+	eapply "$FILESDIR/fix_procps-4.0.5.patch"
 	cmake_src_prepare
-	xdg_src_prepare
 }
 
 src_configure() {
@@ -53,7 +53,6 @@ src_configure() {
 src_install() {
 	make_desktop_entry opentrack OpenTrack opentrack ""
 	doicon -s 24 "gui/images/${PN}.png"
-
 	cmake_src_install
 }
 
