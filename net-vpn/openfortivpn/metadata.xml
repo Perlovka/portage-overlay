@@ -1,11 +1,14 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>johu@gentoo.org</email>
-		<name>Johannes Huber</name>
+		<email>dilfridge@gentoo.org</email>
+		<name>Andreas K. Huettel</name>
 	</maintainer>
 	<upstream>
 		<remote-id type="github">adrienverge/openfortivpn</remote-id>
 	</upstream>
+	<use>
+		<flag name="resolvconf">Use resolvconf to handle /etc/resolv.conf updates</flag>
+	</use>
 </pkgmetadata>
