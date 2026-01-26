@@ -1,4 +1,4 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,13 +7,13 @@ inherit autotools desktop qmake-utils xdg-utils
 DESCRIPTION="A command-line software for the isolation, routing and drilling of PCBs."
 HOMEPAGE="https://github.com/pcb2gcode/pcb2gcode"
 
-SRC_URI="https://github.com/${PN}/${PN}/archive/07c6df4cad2712e3cac7143f04e7a97a71f970b2.tar.gz -> ${P}.tar.gz
+SRC_URI="https://github.com/${PN}/${PN}/archive/6185b56582b436b1a1d930f039d620fa0b22fe25.tar.gz -> ${P}.tar.gz
 	gui? (
 		https://github.com/${PN}/pcb2gcodeGUI/archive/ed8acfcf162bbe281affd3dbb0818ce39e604aae.tar.gz -> ${P}-gui.tar.gz
 	)
 "
 
-S="${WORKDIR}/pcb2gcode-07c6df4cad2712e3cac7143f04e7a97a71f970b2"
+S="${WORKDIR}/pcb2gcode-6185b56582b436b1a1d930f039d620fa0b22fe25"
 GUI_DIR="pcb2gcodeGUI-ed8acfcf162bbe281affd3dbb0818ce39e604aae"
 
 LICENSE="GPL-3"
@@ -22,12 +22,13 @@ KEYWORDS="~amd64"
 IUSE="+geos gui"
 
 DEPEND="
-	geos? ( sci-libs/geos )
 	dev-cpp/glibmm
 	dev-cpp/gtkmm:3.0
 	dev-libs/boost
 	gnome-base/librsvg
 	sci-electronics/gerbv
+	geos? ( sci-libs/geos )
+	gui? ( dev-qt/qtsvg:5 )
 "
 
 src_prepare() {
