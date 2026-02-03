@@ -1,0 +1,21 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -374,7 +374,7 @@ endif()
+ # boost::process was introduced first in version 1.64.0,
+ # boost::beast::detail::base64 was introduced first in version 1.66.0
+ set(MINIMUM_BOOST_VERSION "1.83.0")
+-set(_boost_components "system;filesystem;thread;log;locale;regex;chrono;atomic;date_time;iostreams;nowide")
++set(_boost_components "filesystem;thread;log;locale;regex;chrono;atomic;date_time;iostreams;nowide")
+ find_package(Boost ${MINIMUM_BOOST_VERSION} REQUIRED COMPONENTS ${_boost_components})
+ 
+ find_package(Eigen3 3.3.7 REQUIRED)
+--- a/src/slic3r/Utils/Bonjour.cpp 2026-02-03 09:05:38.047961278 +0200
++++ b/src/slic3r/Utils/Bonjour.cpp  2026-02-03 09:05:58.267262274 +0200
+@@ -12,6 +12,7 @@
+ #include <map>
+ #include <thread>
+ #include <boost/endian/conversion.hpp>
++#include <boost/asio/deadline_timer.hpp>
+ #include <boost/date_time/posix_time/posix_time_duration.hpp>
+ #include <boost/format.hpp>
+ #include <boost/log/trivial.hpp>
