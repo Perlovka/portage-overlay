@@ -1,0 +1,190 @@
+diff '--color=auto' -urN arduino-cli-1.4.1.orig/internal/cli/configuration/configuration.go arduino-cli-1.4.1/internal/cli/configuration/configuration.go
+--- arduino-cli-1.4.1.orig/internal/cli/configuration/configuration.go	2026-01-19 18:11:40.000000000 +0200
++++ arduino-cli-1.4.1/internal/cli/configuration/configuration.go	2026-04-10 12:15:02.983395316 +0300
+@@ -44,45 +44,58 @@
+ 	return res
+ }
+ 
+-var userProvidedDefaultDataDir *string
+-
+-// getDefaultArduinoDataDir returns the full path to the default arduino folder
+-func getDefaultArduinoDataDir() string {
+-	// This is overridden by --config-dir flag
+-	if userProvidedDefaultDataDir != nil {
+-		return *userProvidedDefaultDataDir
+-	}
++var userProvidedDefaultConfigDir *string
+ 
++// getUserHomeDir returns the full path to the user home directory
++func getUserHomeDir() string {
+ 	userHomeDir, err := os.UserHomeDir()
+ 	if err != nil {
+ 		feedback.Warning(i18n.Tr("Unable to get user home dir: %v", err))
+ 		return "."
+ 	}
++    return userHomeDir
++}
++
++// getDefaultArduinoConfigDir returns the full path to the default arduino config directory
++func getDefaultArduinoConfigDir() string {
++
++	// This is overridden by --config-dir flag
++	if userProvidedDefaultConfigDir != nil {
++		return *userProvidedDefaultConfigDir
++	}
++
++    userConfigDir, err := os.UserConfigDir()
++    if err != nil {
++        feedback.Warning(i18n.Tr("Unable to get user config dir: %v", err))
++        return "."
++    }
++    return filepath.Join(userConfigDir, "arduino")
++}
++
++// getDefaultArduinoDataDir returns the full path to the default arduino data directory
++func getDefaultArduinoDataDir() string {
++    userHomeDir := getUserHomeDir()
+ 
+ 	switch runtime.GOOS {
+ 	case "linux":
+-		return filepath.Join(userHomeDir, ".arduino15")
++		return filepath.Join(userHomeDir, ".local/share/arduino")
+ 	case "darwin":
+-		return filepath.Join(userHomeDir, "Library", "Arduino15")
++		return filepath.Join(userHomeDir, "Library", "Arduino")
+ 	case "windows":
+ 		localAppDataPath, err := win32.GetLocalAppDataFolder()
+ 		if err != nil {
+ 			feedback.Warning(i18n.Tr("Unable to get Local App Data Folder: %v", err))
+ 			return "."
+ 		}
+-		return filepath.Join(localAppDataPath, "Arduino15")
++		return filepath.Join(localAppDataPath, "Arduino")
+ 	default:
+ 		return "."
+ 	}
+ }
+ 
+-// getDefaultUserDir returns the full path to the default user folder
++// getDefaultUserDir returns the full path to the default user directory
+ func getDefaultUserDir() string {
+-	userHomeDir, err := os.UserHomeDir()
+-	if err != nil {
+-		feedback.Warning(i18n.Tr("Unable to get user home dir: %v", err))
+-		return "."
+-	}
++	userHomeDir := getUserHomeDir()
+ 
+ 	switch runtime.GOOS {
+ 	case "linux":
+@@ -101,8 +114,8 @@
+ 	}
+ }
+ 
+-// getDefaultBuildCacheDir returns the full path to the default build cache folder
+-func getDefaultBuildCacheDir() string {
++// getDefaultCacheDir returns the full path to the default cache directory
++func getDefaultCacheDir() string {
+ 	var cacheDir *paths.Path
+ 	if p, err := os.UserCacheDir(); err == nil {
+ 		cacheDir = paths.New(p)
+@@ -126,7 +139,7 @@
+ 					feedback.FatalError(fmt.Errorf("invalid --config-dir value: %w", err), feedback.ErrBadArgument)
+ 				}
+ 				configDir := absArgs.String()
+-				userProvidedDefaultDataDir = &configDir
++				userProvidedDefaultConfigDir = &configDir
+ 				break
+ 			}
+ 		}
+@@ -143,11 +156,8 @@
+ 	if p, ok := os.LookupEnv("ARDUINO_CONFIG_FILE"); ok {
+ 		return p
+ 	}
+-	if p, ok := os.LookupEnv("ARDUINO_DIRECTORIES_DATA"); ok {
+-		return filepath.Join(p, "arduino-cli.yaml")
+-	}
+-	if p, ok := os.LookupEnv("ARDUINO_DATA_DIR"); ok {
++	if p, ok := os.LookupEnv("ARDUINO_CONFIG_DIR"); ok {
+ 		return filepath.Join(p, "arduino-cli.yaml")
+ 	}
+-	return filepath.Join(getDefaultArduinoDataDir(), "arduino-cli.yaml")
++	return filepath.Join(getDefaultArduinoConfigDir(), "arduino-cli.yaml")
+ }
+diff '--color=auto' -urN arduino-cli-1.4.1.orig/internal/cli/configuration/configuration_test.go arduino-cli-1.4.1/internal/cli/configuration/configuration_test.go
+--- arduino-cli-1.4.1.orig/internal/cli/configuration/configuration_test.go	2026-01-19 18:11:40.000000000 +0200
++++ arduino-cli-1.4.1/internal/cli/configuration/configuration_test.go	2026-04-10 10:57:07.574105657 +0300
+@@ -43,7 +43,7 @@
+ }
+ 
+ func TestFindConfigFile(t *testing.T) {
+-	defaultConfigFile := filepath.Join(getDefaultArduinoDataDir(), "arduino-cli.yaml")
++	defaultConfigFile := filepath.Join(getDefaultArduinoConfigDir(), "arduino-cli.yaml")
+ 	configFile := FindConfigFlagsInArgsOrFallbackOnEnv([]string{"--config-file"})
+ 	require.Equal(t, defaultConfigFile, configFile)
+ 
+diff '--color=auto' -urN arduino-cli-1.4.1.orig/internal/cli/configuration/defaults.go arduino-cli-1.4.1/internal/cli/configuration/defaults.go
+--- arduino-cli-1.4.1.orig/internal/cli/configuration/defaults.go	2026-01-19 18:11:40.000000000 +0200
++++ arduino-cli-1.4.1/internal/cli/configuration/defaults.go	2026-04-10 12:18:11.804848092 +0300
+@@ -44,6 +44,7 @@
+ 	setDefaultValueAndKeyTypeSchema("board_manager.enable_unsafe_install", false)
+ 
+ 	// arduino directories
++	setDefaultValueAndKeyTypeSchema("directories.cache", getDefaultCacheDir())
+ 	setDefaultValueAndKeyTypeSchema("directories.data", getDefaultArduinoDataDir())
+ 	setDefaultValueAndKeyTypeSchema("directories.downloads", "")
+ 	setDefaultValueAndKeyTypeSchema("directories.user", getDefaultUserDir())
+@@ -53,7 +54,7 @@
+ 	setDefaultValueAndKeyTypeSchema("sketch.always_export_binaries", false)
+ 	setDefaultValueAndKeyTypeSchema("build_cache.ttl", (time.Hour * 24 * 30).String())
+ 	setDefaultValueAndKeyTypeSchema("build_cache.compilations_before_purge", uint(10))
+-	setDefaultValueAndKeyTypeSchema("build_cache.path", getDefaultBuildCacheDir())
++	setDefaultValueAndKeyTypeSchema("build_cache.path", getDefaultCacheDir())
+ 	setKeyTypeSchema("build_cache.extra_paths", []string{})
+ 
+ 	// daemon settings
+diff '--color=auto' -urN arduino-cli-1.4.1.orig/internal/cli/configuration/directories.go arduino-cli-1.4.1/internal/cli/configuration/directories.go
+--- arduino-cli-1.4.1.orig/internal/cli/configuration/directories.go	2026-01-19 18:11:40.000000000 +0200
++++ arduino-cli-1.4.1/internal/cli/configuration/directories.go	2026-04-10 12:21:13.304624332 +0300
+@@ -27,8 +27,8 @@
+ 		res.Add(packagesDir)
+ 	}
+ 
+-	if userDir, ok, _ := settings.GetStringOk("directories.user"); ok {
+-		if hwDir := paths.New(userDir, "hardware"); hwDir.IsDir() {
++	if dataDir, ok, _ := settings.GetStringOk("directories.data"); ok {
++		if hwDir := paths.New(dataDir, "hardware"); hwDir.IsDir() {
+ 			res.Add(hwDir)
+ 		}
+ 	}
+@@ -48,7 +48,7 @@
+ // LibrariesDir returns the full path to the user directory containing
+ // custom libraries
+ func (settings *Settings) LibrariesDir() *paths.Path {
+-	return settings.UserDir().Join("libraries")
++	return settings.DataDir().Join("libraries")
+ }
+ 
+ // UserDir returns the full path to the user directory
+@@ -71,6 +71,14 @@
+ 	return settings.DataDir().Join("internal")
+ }
+ 
++// CacheDir returns the full path to the cache directory
++func (settings *Settings) CacheDir() *paths.Path {
++	if cacheDir, ok, _ := settings.GetStringOk("directories.cache"); ok {
++		return paths.New(cacheDir)
++	}
++	return paths.New(settings.Defaults.GetString("directories.cache"))
++}
++
+ // DataDir returns the full path to the data directory
+ func (settings *Settings) DataDir() *paths.Path {
+ 	if dataDir, ok, _ := settings.GetStringOk("directories.data"); ok {
+@@ -84,5 +92,5 @@
+ 	if downloadDir, ok, _ := settings.GetStringOk("directories.downloads"); ok {
+ 		return paths.New(downloadDir)
+ 	}
+-	return settings.DataDir().Join("staging")
++	return settings.CacheDir().Join("staging")
+ }
