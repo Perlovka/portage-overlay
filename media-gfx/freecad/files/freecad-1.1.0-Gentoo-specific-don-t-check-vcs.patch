@@ -1,0 +1,14 @@
+--- a/src/Tools/SubWCRev.py
++++ b/src/Tools/SubWCRev.py
+@@ -517,11 +517,6 @@ def main():
+ 
+     vcs = [
+         GitControl(),
+-        DebianGitHub(),
+-        BazaarControl(),
+-        Subversion(),
+-        MercurialControl(),
+-        DebianChangelog(),
+         UnknownControl(),
+     ]
+     for i in vcs:
