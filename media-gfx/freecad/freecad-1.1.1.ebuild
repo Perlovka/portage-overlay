@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{11..13} )
+PYTHON_COMPAT=( python3_{13..14} )
 
 # https://github.com/FreeCAD/FreeCAD/issues/19066
 # The added asserts break on mem leaks, so tests fail.
@@ -284,7 +284,7 @@ src_configure() {
 		-DCMAKE_POLICY_DEFAULT_CMP0175="OLD" # add_custom_command
 		-DCMAKE_POLICY_DEFAULT_CMP0153="OLD" # exec_program
 
-		-DPYCXX_INCLUDE_DIR="${ESYSROOT}/usr/include/${PYTHON_SINGLE_TARGET/_/.}"
+		-DPYCXX_INCLUDE_DIRS="${ESYSROOT}/usr/include/${PYTHON_SINGLE_TARGET/_/.}"
 		-DPYCXX_SOURCE_DIR="${ESYSROOT}/usr/share/${PYTHON_SINGLE_TARGET/_/.}/CXX"
 
 		-DBUILD_DESIGNER_PLUGIN=$(usex designer)
