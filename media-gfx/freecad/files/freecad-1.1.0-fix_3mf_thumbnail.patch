@@ -1,0 +1,103 @@
+From 3a0765c0987c7f5f8cad10f2d5b25ecf442634e6 Mon Sep 17 00:00:00 2001
+From: sliptonic <shopinthewoods@gmail.com>
+Date: Sat, 20 Jun 2026 23:32:28 -0500
+Subject: [PATCH] GUI: Fix 3MF Thumbnail rendering (#30682)
+
+Add missing `QSurfaceFormat::defaultFormat()` setup in creation. Also set an 8-bit internal texture format and added SoShapeHints + SoMaterial (blue-grey) to mesh rendering, so a mesh is shaded and a non-white color.
+---
+ src/Gui/SoFCOffscreenRenderer.cpp       |  8 +++++-
+ src/Mod/Mesh/Gui/ThumbnailExtension.cpp | 34 +++++++++++++++++++++++--
+ 2 files changed, 39 insertions(+), 3 deletions(-)
+
+diff --git a/src/Gui/SoFCOffscreenRenderer.cpp b/src/Gui/SoFCOffscreenRenderer.cpp
+index fabbd067dc86..b4eaf4a48631 100644
+--- a/src/Gui/SoFCOffscreenRenderer.cpp
++++ b/src/Gui/SoFCOffscreenRenderer.cpp
+@@ -637,7 +637,13 @@ SbBool SoQtOffscreenRenderer::renderFromBase(SoBase* base)
+ {
+     const SbVec2s fullsize = this->viewport.getViewportSizePixels();
+ 
+-    QSurfaceFormat format;
++    // Start from the application-wide default format so the offscreen context inherits the OpenGL
++    // compatibility profile requested in Application::runApplication(). A freshly constructed
++    // QSurfaceFormat requests a NoProfile/2.0 context, which on Wayland with proprietary drivers
++    // resolves to a core/ES context lacking the legacy GL entry points (glBegin/glEnd, etc.) that
++    // Coin uses to draw geometry. In that case glClear still paints the background but no geometry
++    // is rendered, producing an empty image.
++    QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+     format.setSamples(PRIVATE(this)->numSamples);
+     QOpenGLContext context;
+     context.setFormat(format);
+diff --git a/src/Mod/Mesh/Gui/ThumbnailExtension.cpp b/src/Mod/Mesh/Gui/ThumbnailExtension.cpp
+index be50b3145af9..b4053554615e 100644
+--- a/src/Mod/Mesh/Gui/ThumbnailExtension.cpp
++++ b/src/Mod/Mesh/Gui/ThumbnailExtension.cpp
+@@ -24,14 +24,17 @@
+ 
+ #include <QBuffer>
+ #include <QByteArray>
++#include <QOpenGLFramebufferObjectFormat>
+ 
+ #include <Inventor/SbRotation.h>
+ #include <Inventor/SbViewportRegion.h>
+ #include <Inventor/nodes/SoCoordinate3.h>
+ #include <Inventor/nodes/SoDirectionalLight.h>
+ #include <Inventor/nodes/SoIndexedFaceSet.h>
++#include <Inventor/nodes/SoMaterial.h>
+ #include <Inventor/nodes/SoOrthographicCamera.h>
+ #include <Inventor/nodes/SoSeparator.h>
++#include <Inventor/nodes/SoShapeHints.h>
+ 
+ #include <Gui/SoFCOffscreenRenderer.h>
+ 
+@@ -47,21 +50,48 @@ Mesh::Extension3MF::Resource ThumbnailExtension3MF::addMesh(const Mesh::MeshObje
+     SoIndexedFaceSet* faces = new SoIndexedFaceSet();
+ 
+     SoOrthographicCamera* cam = new SoOrthographicCamera();
++
++    // The mesh geometry carries no normals or material. Without a SoShapeHints the face set is not
++    // shaded (it renders as a flat, single-color silhouette); without a SoMaterial it falls back to
++    // Coin's default near-white color. Either way the result blends into the white background and is
++    // then erased by the transparent-background pass (which turns every white pixel transparent),
++    // leaving an empty image. Give it shading and a distinct color so it survives and is visible.
++    SoShapeHints* hints = new SoShapeHints();
++    hints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
++    hints->shapeType = SoShapeHints::UNKNOWN_SHAPE_TYPE;
++    hints->creaseAngle = 0.5F;
++
++    SoMaterial* material = new SoMaterial();
++    material->diffuseColor.setValue(0.6F, 0.6F, 0.65F);
++
++    SbRotation rot(-0.35355F, -0.14644F, -0.35355F, -0.85355F);
++
++    // Light the faces the camera sees by aligning the light with the camera view direction.
++    SoDirectionalLight* light = new SoDirectionalLight();
++    SbVec3f lightDir(0.0F, 0.0F, -1.0F);
++    rot.multVec(lightDir, lightDir);
++    light->direction.setValue(lightDir);
++
+     SoSeparator* root = new SoSeparator();
+     root->ref();
+     root->addChild(cam);
+-    root->addChild(new SoDirectionalLight);
++    root->addChild(light);
++    root->addChild(hints);
++    root->addChild(material);
+     root->addChild(coord);
+     root->addChild(faces);
+ 
+     ViewProviderMeshBuilder().createMesh(mesh.getKernel(), coord, faces);
+ 
+-    SbRotation rot(-0.35355F, -0.14644F, -0.35355F, -0.85355F);
+     cam->orientation.setValue(rot);
+     SbViewportRegion vpr(256, 256);
+     cam->viewAll(root, vpr);
+ 
+     Gui::SoQtOffscreenRenderer renderer(vpr);
++    // The renderer defaults to a 32-bit float internal texture format (GL_RGB32F_ARB). Reading
++    // that framebuffer back into an 8-bit QImage yields a corrupted (magenta) image on some
++    // drivers, so request a standard 8-bit format like the regular screenshot path does.
++    renderer.setInternalTextureFormat(QOpenGLFramebufferObjectFormat().internalTextureFormat());
+     renderer.setBackgroundColor(SbColor4f(1.0F, 1.0F, 1.0F, 0.0F));
+     QImage img;
+     renderer.render(root);
