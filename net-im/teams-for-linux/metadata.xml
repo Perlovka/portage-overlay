@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pkgmetadata>
+  <maintainer type="person">
+    <email>colonia_duck@posteo.net</email>
+    <name>Julianne Clarke</name>
+  </maintainer>
+  <upstream>
+    <bugs-to>https://github.com/IsmaelMartinez/teams-for-linux/issues</bugs-to>
+    <changelog>https://github.com/IsmaelMartinez/teams-for-linux/releases</changelog>
+    <remote-id type="github">IsmaelMartinez/teams-for-linux</remote-id>
+  </upstream>
+</pkgmetadata>
